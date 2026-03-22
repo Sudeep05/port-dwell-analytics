@@ -1,0 +1,31 @@
+{
+  "terminal_name": "Cold Chain Terminal \u2014 Reefer Specialist",
+  "blocks": [
+    {
+      "block_id": "R01",
+      "rows": 6,
+      "bays": 30,
+      "max_tier": 4,
+      "teu_capacity": 720,
+      "accepts_types": [
+        "reefer"
+      ],
+      "has_reefer_plugs": true,
+      "reefer_plug_count": 200
+    },
+    {
+      "block_id": "R02",
+      "rows": 5,
+      "bays": 25,
+      "max_tier": 4,
+      "teu_capacity": 500,
+      "accepts_types": [
+        "reefer"
+      ],
+      "has_reefer_plugs": true,
+      "reefer_plug_count": 150
+    }
+  ],
+  "gate_count_in": 3,
+  "gate_count_out": 2
+}

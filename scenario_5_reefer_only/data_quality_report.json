@@ -1,0 +1,220 @@
+{
+  "status": "PASS",
+  "total_rows": 3000,
+  "valid_rows": 3000,
+  "excluded_rows": 0,
+  "unique_containers": 2760,
+  "date_range": {
+    "start": "2025-01-01",
+    "end": "2025-06-30",
+    "span_days": 180
+  },
+  "column_quality": {
+    "container_id": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "iso_type_code": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "size_ft": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "container_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "weight_tons": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_in_time": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_out_time": {
+      "nulls": 101,
+      "null_pct": 3.37
+    },
+    "movement_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_block": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_bay": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_row": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_tier": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "vessel_name": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "shipping_line": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "cargo_category": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_in_mode": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_out_mode": {
+      "nulls": 0,
+      "null_pct": 0.0
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "profiling": {
+    "size_ft": {
+      "count": 3000,
+      "min": 20.0,
+      "max": 40.0,
+      "mean": 33.11,
+      "median": 40.0,
+      "std": 9.5,
+      "skewness": -0.66
+    },
+    "weight_tons": {
+      "count": 3000,
+      "min": 2.0,
+      "max": 32.0,
+      "mean": 16.85,
+      "median": 16.8,
+      "std": 7.98,
+      "skewness": -0.02
+    },
+    "yard_bay": {
+      "count": 3000,
+      "min": 1.0,
+      "max": 45.0,
+      "mean": 18.59,
+      "median": 18.0,
+      "std": 11.06,
+      "skewness": 0.19
+    },
+    "yard_row": {
+      "count": 3000,
+      "min": 1.0,
+      "max": 8.0,
+      "mean": 4.4,
+      "median": 4.0,
+      "std": 2.25,
+      "skewness": 0.06
+    },
+    "yard_tier": {
+      "count": 3000,
+      "min": 1.0,
+      "max": 5.0,
+      "mean": 2.96,
+      "median": 3.0,
+      "std": 1.38,
+      "skewness": 0.02
+    },
+    "container_type": {
+      "count": 3000,
+      "unique": 1,
+      "top_values": {
+        "reefer": 3000
+      }
+    },
+    "movement_type": {
+      "count": 3000,
+      "unique": 3,
+      "top_values": {
+        "import": 1388,
+        "export": 1063,
+        "transhipment": 549
+      }
+    },
+    "yard_block": {
+      "count": 3000,
+      "unique": 2,
+      "top_values": {
+        "R01": 1848,
+        "R02": 1152
+      }
+    },
+    "shipping_line": {
+      "count": 3000,
+      "unique": 9,
+      "top_values": {
+        "MSC": 608,
+        "Maersk": 538,
+        "CMA CGM": 417,
+        "COSCO": 381,
+        "Hapag-Lloyd": 307,
+        "ONE": 251,
+        "Evergreen": 233,
+        "HMM": 148,
+        "ZIM": 117
+      }
+    },
+    "gate_in_mode": {
+      "count": 3000,
+      "unique": 4,
+      "top_values": {
+        "vessel": 1937,
+        "truck": 767,
+        "rail": 202,
+        "barge": 94
+      }
+    },
+    "gate_out_mode": {
+      "count": 3000,
+      "unique": 4,
+      "top_values": {
+        "vessel": 1612,
+        "truck": 981,
+        "rail": 267,
+        "barge": 140
+      }
+    },
+    "cargo_category": {
+      "count": 3000,
+      "unique": 3,
+      "top_values": {
+        "food_perishable": 1835,
+        "pharmaceuticals": 716,
+        "chemicals": 449
+      }
+    },
+    "iso_type_code": {
+      "count": 3000,
+      "unique": 2,
+      "top_values": {
+        "45R1": 1967,
+        "22R1": 1033
+      }
+    }
+  },
+  "optional_columns_present": [
+    "iso_type_code",
+    "yard_bay",
+    "yard_row",
+    "yard_tier",
+    "vessel_name",
+    "shipping_line",
+    "cargo_category",
+    "gate_in_mode",
+    "gate_out_mode"
+  ],
+  "yard_config_provided": true,
+  "tariff_config_provided": true
+}

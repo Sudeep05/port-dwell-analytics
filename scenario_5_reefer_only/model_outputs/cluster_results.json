@@ -1,0 +1,655 @@
+{
+  "all_results": [
+    {
+      "algorithm": "KMeans",
+      "k": 2,
+      "silhouette_score": 0.3284,
+      "calinski_harabasz": 1234.87,
+      "inertia": 8130.36,
+      "centroids": [
+        [
+          0.3994781317777606,
+          0.5826524482324272,
+          0.5329416159174603,
+          0.22736721144731972
+        ],
+        [
+          -0.5720714521347635,
+          -0.8343856788026458,
+          -0.7631974315193827,
+          -0.3256005284736369
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 2,
+      "silhouette_score": 0.3333,
+      "calinski_harabasz": 1224.32,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 3,
+      "silhouette_score": 0.3898,
+      "calinski_harabasz": 1336.18,
+      "inertia": 6030.87,
+      "centroids": [
+        [
+          0.30873872675133335,
+          0.7254603410745684,
+          0.4723476276020906,
+          0.22244854478825635
+        ],
+        [
+          0.29046704387460226,
+          -1.3759409772422257,
+          -0.1259161940088092,
+          -0.4139302722462727
+        ],
+        [
+          -1.7263856901817998,
+          0.07941130293522113,
+          -1.4953439817965193,
+          0.008324660169774008
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 3,
+      "silhouette_score": 0.3681,
+      "calinski_harabasz": 1230.58,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 4,
+      "silhouette_score": 0.4092,
+      "calinski_harabasz": 1469.33,
+      "inertia": 4596.84,
+      "centroids": [
+        [
+          -1.8081928486495196,
+          0.06699446892920233,
+          -1.5671622418752384,
+          0.01665055581176012
+        ],
+        [
+          0.10851201377877157,
+          -1.3759409772422255,
+          -0.3234881129284178,
+          -0.43506753171057
+        ],
+        [
+          1.803765541147285,
+          0.13005856207544678,
+          1.9544980303590924,
+          -0.06379749434308607
+        ],
+        [
+          0.06259176944695702,
+          0.7267753606730148,
+          0.20689917486362597,
+          0.25299133344438296
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ],
+      "_selected": true
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 4,
+      "silhouette_score": 0.4075,
+      "calinski_harabasz": 1439.65,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 5,
+      "silhouette_score": 0.3945,
+      "calinski_harabasz": 1649.43,
+      "inertia": 3535.58,
+      "centroids": [
+        [
+          0.1242869653594262,
+          -1.3759409772422257,
+          -0.30737470630663866,
+          -0.42848083209762444
+        ],
+        [
+          0.05489498816083956,
+          0.7267753606730162,
+          0.20164565114437943,
+          -0.6952460127807301
+        ],
+        [
+          0.05946208886493185,
+          0.7267753606730162,
+          0.20650286545243174,
+          1.0410094060219761
+        ],
+        [
+          1.8716177616269083,
+          0.14617458080089638,
+          2.0422876941616974,
+          -0.053323041848330026
+        ],
+        [
+          -1.8466729120193979,
+          0.029648380717288408,
+          -1.609483479105952,
+          0.0070925165319937365
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 5,
+      "silhouette_score": 0.3557,
+      "calinski_harabasz": 1490.85,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 6,
+      "silhouette_score": 0.4004,
+      "calinski_harabasz": 1598.06,
+      "inertia": 3082.45,
+      "centroids": [
+        [
+          0.198976485650621,
+          -1.3759409772422257,
+          -0.2395860457009484,
+          -0.435043171703663
+        ],
+        [
+          0.06665617074673799,
+          0.7267753606730162,
+          0.21173934503709274,
+          -0.7084444247296464
+        ],
+        [
+          0.08747073571152122,
+          0.7267753606730162,
+          0.23120045343133486,
+          1.033851702686793
+        ],
+        [
+          1.8846741302667505,
+          0.18492153513331844,
+          2.0682351522346774,
+          -0.04135256678477201
+        ],
+        [
+          -1.5221974021388553,
+          -1.3759409772422262,
+          -1.7077450391519327,
+          -0.35215494920450996
+        ],
+        [
+          -1.7938234321108335,
+          0.7267753606730156,
+          -1.38362549124974,
+          0.22836385035741605
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 6,
+      "silhouette_score": 0.3667,
+      "calinski_harabasz": 1424.78,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 7,
+      "silhouette_score": 0.3963,
+      "calinski_harabasz": 1541.59,
+      "inertia": 2762.06,
+      "centroids": [
+        [
+          0.08473847662215793,
+          0.7267753606730164,
+          0.22819083779445407,
+          1.0356887229790483
+        ],
+        [
+          0.019742611368690606,
+          -1.3759409772422253,
+          -0.41914074940017504,
+          -0.421804261239793
+        ],
+        [
+          0.06967649143201649,
+          0.7267753606730163,
+          0.21481001480762613,
+          -0.7049948392334459
+        ],
+        [
+          -1.7938234321108337,
+          0.7267753606730156,
+          -1.3836254912497399,
+          0.22836385035741608
+        ],
+        [
+          1.2324574711975136,
+          -1.375940977242226,
+          0.8700449875754985,
+          -0.34098286325197674
+        ],
+        [
+          1.9134226603809332,
+          0.6133935973540563,
+          2.2184467172401487,
+          -0.0011021472567935339
+        ],
+        [
+          -1.677072802939432,
+          -1.3759409772422264,
+          -1.8344339207223441,
+          -0.40646175124950057
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 7,
+      "silhouette_score": 0.3322,
+      "calinski_harabasz": 1387.19,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 8,
+      "silhouette_score": 0.3766,
+      "calinski_harabasz": 1540.52,
+      "inertia": 2451.55,
+      "centroids": [
+        [
+          0.16315600959420887,
+          -1.3759409772422246,
+          -0.2760858800318451,
+          -1.0735000712950546
+        ],
+        [
+          1.0237684367960456,
+          0.7267753606730154,
+          1.201977019136897,
+          0.7823714712711581
+        ],
+        [
+          -1.8421117948688397,
+          0.7267753606730156,
+          -1.4244910059292106,
+          0.24407535873856928
+        ],
+        [
+          0.020933398154363212,
+          0.7267753606730161,
+          0.1688458178601227,
+          -0.7492410022008829
+        ],
+        [
+          -0.0732456700247209,
+          0.7267753606730161,
+          0.07335382114792363,
+          1.055421757563291
+        ],
+        [
+          0.15657475926129089,
+          -1.3759409772422249,
+          -0.2764159508095399,
+          0.2869367534808017
+        ],
+        [
+          2.0558586729763495,
+          -0.17265243704795497,
+          2.181260481070073,
+          -0.5829311075329774
+        ],
+        [
+          -1.6439156390269962,
+          -1.3759409772422264,
+          -1.8073144331098863,
+          -0.3865323173752014
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 8,
+      "silhouette_score": 0.3157,
+      "calinski_harabasz": 1390.62,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 9,
+      "silhouette_score": 0.3855,
+      "calinski_harabasz": 1573.02,
+      "inertia": 2165.8,
+      "centroids": [
+        [
+          -0.1301899286361642,
+          0.7267753606730162,
+          0.01882203182567913,
+          1.0462088416051911
+        ],
+        [
+          0.03813064378120695,
+          0.7267753606730161,
+          0.18373656756163131,
+          -0.7452257454671112
+        ],
+        [
+          1.4614771604574253,
+          -1.3759409772422264,
+          1.1388144491175107,
+          -0.23729585094565084
+        ],
+        [
+          0.11356392213670227,
+          -1.375940977242225,
+          -0.3289859273402249,
+          -1.088729094778107
+        ],
+        [
+          -1.8362324260656653,
+          0.7267753606730155,
+          -1.4195197282398515,
+          0.18632264859311645
+        ],
+        [
+          2.1634296969494797,
+          0.5865942714786658,
+          2.51870735379243,
+          -0.6592485544955279
+        ],
+        [
+          0.8993532535928214,
+          0.7267753606730157,
+          1.0653964960015785,
+          0.8757390486015585
+        ],
+        [
+          -1.697539807101765,
+          -1.3759409772422264,
+          -1.8511838492364971,
+          -0.41089836743259095
+        ],
+        [
+          0.020921437178410933,
+          -1.3759409772422253,
+          -0.41243756337579957,
+          0.27717012208155395
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 9,
+      "silhouette_score": 0.3319,
+      "calinski_harabasz": 1431.83,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "KMeans",
+      "k": 10,
+      "silhouette_score": 0.4068,
+      "calinski_harabasz": 1589.47,
+      "inertia": 1948.37,
+      "centroids": [
+        [
+          0.035421567489258225,
+          0.7267753606730163,
+          0.17757190535401254,
+          1.0430865890186747
+        ],
+        [
+          -1.7041993568869307,
+          -1.3759409772422264,
+          -1.8566311693260247,
+          -0.4113653929572467
+        ],
+        [
+          0.11255206275071897,
+          -1.375940977242225,
+          -0.3296896892837566,
+          -1.0886282419752726
+        ],
+        [
+          0.046803370371027365,
+          0.7267753606730162,
+          0.1902723987844077,
+          -0.7295385630425898
+        ],
+        [
+          1.4099600641232484,
+          -1.3759409772422262,
+          1.0741847901547297,
+          -0.23926364348661416
+        ],
+        [
+          0.006522722748476062,
+          -1.3759409772422253,
+          -0.42563260455369084,
+          0.2803300204488968
+        ],
+        [
+          3.170952548521341,
+          0.23777156115784295,
+          3.622298429566954,
+          -0.7504687940723289
+        ],
+        [
+          -1.7958866857695341,
+          0.7267753606730152,
+          -1.3856243569426574,
+          -0.6809027718507203
+        ],
+        [
+          1.3347407062373595,
+          0.7267753606730155,
+          1.5604861217910375,
+          0.281484867668089
+        ],
+        [
+          -1.7197227541925206,
+          0.7267753606730151,
+          -1.3206948023058094,
+          1.0984425424789033
+        ]
+      ],
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    },
+    {
+      "algorithm": "Hierarchical",
+      "k": 10,
+      "silhouette_score": 0.3397,
+      "calinski_harabasz": 1438.77,
+      "inertia": null,
+      "centroids": null,
+      "_feature_cols": [
+        "dwell_hours_log",
+        "teu_equivalent",
+        "storage_cost_usd_log",
+        "weight_tons"
+      ]
+    }
+  ],
+  "best": {
+    "algorithm": "KMeans",
+    "k": 4,
+    "silhouette_score": 0.4092,
+    "calinski_harabasz": 1469.33,
+    "quality": "Weak but usable"
+  },
+  "segment_profiles": [
+    {
+      "cluster": 0,
+      "count": 392,
+      "mean_dwell_days": 0.51,
+      "median_dwell_days": 0.48,
+      "mean_teu": 1.69,
+      "mean_storage_cost": 21.57,
+      "dominant_movement": "import",
+      "movement_pct": 40.6,
+      "dominant_container_type": "reefer",
+      "container_type_pct": 100.0,
+      "dominant_flow_path": "vessel\u2192truck",
+      "overstay_pct": 0.0
+    },
+    {
+      "cluster": 1,
+      "count": 796,
+      "mean_dwell_days": 3.63,
+      "median_dwell_days": 3.24,
+      "mean_teu": 1.0,
+      "mean_storage_cost": 101.53,
+      "dominant_movement": "import",
+      "movement_pct": 47.9,
+      "dominant_container_type": "reefer",
+      "container_type_pct": 100.0,
+      "dominant_flow_path": "vessel\u2192truck",
+      "overstay_pct": 5.5
+    },
+    {
+      "cluster": 2,
+      "count": 295,
+      "mean_dwell_days": 22.54,
+      "median_dwell_days": 14.61,
+      "mean_teu": 1.72,
+      "mean_storage_cost": 2604.34,
+      "dominant_movement": "import",
+      "movement_pct": 53.9,
+      "dominant_container_type": "reefer",
+      "container_type_pct": 100.0,
+      "dominant_flow_path": "vessel\u2192truck",
+      "overstay_pct": 99.3
+    },
+    {
+      "cluster": 3,
+      "count": 1416,
+      "mean_dwell_days": 3.37,
+      "median_dwell_days": 3.04,
+      "mean_teu": 2.0,
+      "mean_storage_cost": 182.73,
+      "dominant_movement": "import",
+      "movement_pct": 44.6,
+      "dominant_container_type": "reefer",
+      "container_type_pct": 100.0,
+      "dominant_flow_path": "vessel\u2192truck",
+      "overstay_pct": 1.7
+    }
+  ]
+}

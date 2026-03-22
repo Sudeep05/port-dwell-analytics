@@ -1,0 +1,180 @@
+Scenario 5: Reefer-Only Terminal
+Started: 2026-03-22 12:47:48.412047
+Description: 3K containers, all reefer type, reefer yard config
+Expected: PASS validation, segmentation still meaningful, reefer plug utilization prominent
+
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/generate_synthetic_data.py --num-containers 3000 --seed 55 --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_raw.csv --yard-config-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_yard.json --tariff-config-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/tariff_config.json --ground-truth-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_gt.csv
+============================================================
+Generating 3,000 containers (2025-01-01 to 2025-06-30, seed=55)...
+  Generating 3,000 containers vectorized...
+    [0/8] Container IDs: 2,760 unique + 240 repeat visits (0.0s)
+    [1/8] Clusters assigned (0.0s)
+    [2/8] ISO codes + types (0.0s)
+    [3/8] Movement types (0.0s)
+    [4/8] Transport + shipping (0.0s)
+    [5/8] Dwell hours computed (0.0s)
+    [6/8] Timestamps computed (0.0s)
+    [7/8] Attributes computed (0.0s)
+    [8/8] DataFrame assembled (0.0s)
+  Container data saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_raw.csv (3,000 rows)
+  Ground truth saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_gt.csv
+  Yard config saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/_yard.json
+  Tariff config saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/tariff_config.json
+
+--- Dataset Summary (generated in 0.0s) ---
+  Unique containers: 2,760 (240 repeat visits = 8.0%)
+  Container ID format sample: HMMU3093666, MEDU4607766, HLCU2925855
+  Date range: 2025-01-01 04:02:41 to 2025-06-30 17:53:09
+  Container types: {'dry': 2220, 'reefer': 356, 'empty': 295, 'special': 71, 'hazardous': 58}
+  Movement types: {'import': 1388, 'export': 1063, 'transhipment': 549}
+  Yard blocks: ['A01', 'A02', 'B01', 'E01', 'H01', 'R01', 'R02']
+  Null gate_out (still in yard): 101
+  Size mix: {40: 1967, 20: 1033}
+  Shipping lines: 9
+  Empty rate: 9.8%
+Created reefer-only dataset: 3000 containers, all reefer
+
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/validate_data.py --input /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/reefer_containers.csv --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/tariff_config.json --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/data_quality_report.json --validated-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/validated_containers.csv
+============================================================
+============================================================
+STAGE 1: Data Validation & Profiling
+============================================================
+
+Quality report saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/data_quality_report.json
+Validated data saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/validated_containers.csv (3000 rows)
+
+--- Validation Result: PASS ---
+  Total rows: 3000
+  Valid rows: 3000
+  Excluded: 0
+  Unique containers: 2760
+  Date range: 2025-01-01 to 2025-06-30 (180 days)
+
+  ✓ Validation passed. Proceed to Stage 2.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/feature_engineering.py --input /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/validated_containers.csv --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/tariff_config.json --output-container /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/dwell_features.csv --output-block /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/block_daily_features.csv
+============================================================
+============================================================
+STAGE 2: Feature Engineering
+============================================================
+  Yard config loaded: 2 blocks
+  Tariff config loaded: USD
+  Overstay threshold: 7 days
+
+  Computing per-container features...
+    Containers with dwell: 2899
+    Mean dwell: 5.0 days
+    Overstay count: 361
+    Total storage revenue: $1,116,310
+    Saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/dwell_features.csv (3000 rows)
+
+  Computing block-daily features...
+    Block-day records: 362
+  Computing gate throughput...
+    Hourly records: 2956
+  Detecting vessel surges...
+    No surge events detected
+    Saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/block_daily_features.csv (362 rows)
+
+  Validation checks:
+    Infinite values: 0
+    NaN in key features: {'dwell_hours': 101, 'teu_equivalent': 0}
+
+  ✓ Feature engineering complete. Proceed to Stage 3.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/run_models.py --container-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/dwell_features.csv --block-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/block_daily_features.csv --output-dir /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/model_outputs
+============================================================
+============================================================
+STAGE 3: Modelling & Analysis
+============================================================
+
+  Part A: Dwell Behaviour Clustering
+  ----------------------------------------
+    Clustering features: 4 dimensions, 2899 containers
+    Testing k = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    Running k=2... KM sil=0.328, HC sil=0.333
+    Running k=3... KM sil=0.390, HC sil=0.368
+    Running k=4... KM sil=0.409, HC sil=0.408
+    Running k=5... KM sil=0.394, HC sil=0.356
+    Running k=6... KM sil=0.400, HC sil=0.367
+    Running k=7... KM sil=0.396, HC sil=0.332
+    Running k=8... KM sil=0.377, HC sil=0.316
+    Running k=9... KM sil=0.385, HC sil=0.332
+    Running k=10... KM sil=0.407, HC sil=0.340
+
+    Algorithm       k     Silhouette   C-H Index    Inertia     
+    --------------------------------------------------------
+    KMeans          2     0.3284       1234.9       8130        
+    Hierarchical    2     0.3333       1224.3       N/A         
+    KMeans          3     0.3898       1336.2       6031        
+    Hierarchical    3     0.3681       1230.6       N/A         
+    KMeans          4     0.4092       1469.3       4597        
+    Hierarchical    4     0.4075       1439.7       N/A         
+    KMeans          5     0.3945       1649.4       3536        
+    Hierarchical    5     0.3557       1490.8       N/A         
+    KMeans          6     0.4004       1598.1       3082        
+    Hierarchical    6     0.3667       1424.8       N/A         
+    KMeans          7     0.3963       1541.6       2762        
+    Hierarchical    7     0.3322       1387.2       N/A         
+    KMeans          8     0.3766       1540.5       2452        
+    Hierarchical    8     0.3157       1390.6       N/A         
+    KMeans          9     0.3855       1573.0       2166        
+    Hierarchical    9     0.3319       1431.8       N/A         
+    KMeans          10    0.4068       1589.5       1948        
+    Hierarchical    10    0.3397       1438.8       N/A         
+
+============================================================
+STAGE 4: Model/Result Validation
+============================================================
+
+  Clustering validation:
+    Selected: KMeans with k=4
+    Silhouette: 0.4092
+    Interpretation: Weak but usable
+
+    Segment profiles:
+    Seg   Count    %       Mean Dwell (d)   Mean TEU  
+    ----------------------------------------------
+    0     392      13.5    0.5              1.7       
+    1     796      27.5    3.6              1.0       
+    2     295      10.2    22.5             1.7       
+    3     1416     48.8    3.4              2.0       
+    Generating dendrogram...
+    Generating centroid comparison...
+    Charts saved to /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/model_outputs/charts/
+
+  Part B: Yard Throughput Forecasting
+  ----------------------------------------
+    Time series: 181 daily observations
+    Train: 144 days, Test: 37 days
+
+    HoltWinters_Additive:
+      MAPE: 13.3%  |  RMSE: 30.2  |  MAE: 25.9
+
+    StatsModels_HoltWinters:
+      MAPE: 17.0%  |  RMSE: 37.5  |  MAE: 33.3
+
+    Selected: HoltWinters_Additive (MAPE: 13.3%)
+
+  All outputs saved to /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/model_outputs/
+  ✓ Modelling & validation complete. Proceed to Stage 5 (LLM) & Stage 6.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/generate_report.py --container-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/dwell_features.csv --block-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/block_daily_features.csv --model-dir /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/model_outputs --quality-report /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/data_quality_report.json --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/tariff_config.json --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/final_report.html
+============================================================
+============================================================
+STAGE 6: Report Generation
+============================================================
+  Generating charts...
+  Building report sections...
+
+  Report saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_5_reefer_only/final_report.html (1720 KB)
+  ✓ Report generation complete.
+
+Completed: 2026-03-22 12:47:56.281947
