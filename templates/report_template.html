@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Container Dwell Time Analysis — {{terminal_name}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         color: #2c2c2a; line-height: 1.6; background: #f8f7f4; padding: 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #085041 0%, #0F6E56 100%);
+             color: white; padding: 40px; border-radius: 12px; margin-bottom: 32px; }
+  .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+  .header p { opacity: 0.85; font-size: 14px; }
+  .section { background: white; border-radius: 12px; padding: 32px;
+              margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .section h2 { font-size: 20px; font-weight: 600; color: #085041;
+                 margin-bottom: 16px; padding-bottom: 8px;
+                 border-bottom: 2px solid #E1F5EE; }
+  .section h3 { font-size: 16px; font-weight: 600; margin: 16px 0 8px; }
+  .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                  gap: 16px; margin: 16px 0; }
+  .metric { background: #f8f7f4; padding: 16px; border-radius: 8px;
+             border-left: 4px solid #1D9E75; }
+  .metric .value { font-size: 24px; font-weight: 700; color: #085041; }
+  .metric .label { font-size: 12px; color: #888780; text-transform: uppercase;
+                    letter-spacing: 0.5px; }
+  .chart { text-align: center; margin: 20px 0; }
+  .chart img { max-width: 100%; border-radius: 8px; border: 1px solid #e8e7e3; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  th { background: #085041; color: white; padding: 10px 12px; text-align: left; font-weight: 500; }
+  td { padding: 10px 12px; border-bottom: 1px solid #e8e7e3; }
+  tr:nth-child(even) { background: #fafaf8; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-pass { background: #E1F5EE; color: #085041; }
+  .badge-warn { background: #FAEEDA; color: #633806; }
+  .badge-fail { background: #FCEBEB; color: #791F1F; }
+  .recommendation { background: #E6F1FB; border-left: 4px solid #378ADD;
+                     padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .warning { background: #FAEEDA; border-left: 4px solid #BA7517;
+              padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .footer { text-align: center; color: #888780; font-size: 12px;
+             margin-top: 32px; padding: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h1>Container Dwell Time Analysis &amp; Yard Throughput Optimization</h1>
+    <p>{{terminal_name}} &mdash; Report generated {{timestamp}}</p>
+  </div>
+
+  <!-- SECTION 1: EXECUTIVE SUMMARY -->
+  <div class="section">
+    <h2>1. Executive Summary</h2>
+    <div class="metric-grid">
+      <div class="metric"><div class="value">{{total_containers}}</div><div class="label">Total Containers</div></div>
+      <div class="metric"><div class="value">{{avg_dwell}} days</div><div class="label">Average Dwell Time</div></div>
+      <div class="metric"><div class="value">{{overstay_pct}}%</div><div class="label">Overstay Rate</div></div>
+      <div class="metric"><div class="value">${{total_revenue}}</div><div class="label">Total Storage Revenue</div></div>
+      <div class="metric"><div class="value">{{peak_utilization}}%</div><div class="label">Peak Block Utilization</div></div>
+      <div class="metric"><div class="value">{{num_segments}}</div><div class="label">Dwell Segments Found</div></div>
+    </div>
+    <p>{{executive_summary_text}}</p>
+  </div>
+
+  <!-- SECTION 2: DATA QUALITY -->
+  <div class="section">
+    <h2>2. Data Quality Summary</h2>
+    <p>Status: <span class="badge {{quality_badge_class}}">{{quality_status}}</span></p>
+    <div class="metric-grid">
+      <div class="metric"><div class="value">{{total_rows}}</div><div class="label">Total Rows</div></div>
+      <div class="metric"><div class="value">{{valid_rows}}</div><div class="label">Valid Rows</div></div>
+      <div class="metric"><div class="value">{{excluded_rows}}</div><div class="label">Excluded Rows</div></div>
+      <div class="metric"><div class="value">{{unique_containers}}</div><div class="label">Unique Containers</div></div>
+    </div>
+    {{quality_warnings_html}}
+  </div>
+
+  <!-- SECTION 3: DWELL TIME DISTRIBUTION -->
+  <div class="section">
+    <h2>3. Dwell Time Distribution Analysis</h2>
+    <div class="chart"><img src="{{chart_dwell_distribution}}" alt="Dwell Distribution"></div>
+    <div class="chart"><img src="{{chart_dwell_by_movement}}" alt="Dwell by Movement Type"></div>
+    <div class="chart"><img src="{{chart_dwell_by_type}}" alt="Dwell by Container Type"></div>
+    <h3>Dwell Category Breakdown</h3>
+    <table>
+      <tr><th>Category</th><th>Count</th><th>Percentage</th></tr>
+      {{dwell_category_rows}}
+    </table>
+  </div>
+
+  <!-- SECTION 4: YARD UTILIZATION -->
+  <div class="section">
+    <h2>4. Yard Utilization Analysis</h2>
+    <div class="chart"><img src="{{chart_utilization_heatmap}}" alt="Utilization Heatmap"></div>
+    <h3>Block Summary</h3>
+    <table>
+      <tr><th>Block</th><th>Avg Utilization</th><th>Peak Utilization</th><th>Avg TEU</th></tr>
+      {{block_summary_rows}}
+    </table>
+  </div>
+
+  <!-- SECTION 5: SEGMENTATION RESULTS -->
+  <div class="section">
+    <h2>5. Segmentation Results</h2>
+    <p>Best model: <strong>{{best_algorithm}}</strong> with <strong>k={{best_k}}</strong> segments.
+    Silhouette score: <strong>{{silhouette_score}}</strong> ({{quality_interpretation}})</p>
+    <div class="chart"><img src="{{chart_elbow}}" alt="Elbow Plot"></div>
+    <div class="chart"><img src="{{chart_silhouette}}" alt="Silhouette Comparison"></div>
+    <div class="chart"><img src="{{chart_pca}}" alt="PCA Projection"></div>
+    <div class="chart"><img src="{{chart_segment_bar}}" alt="Segment Counts"></div>
+    <h3>Segment Profiles</h3>
+    <table>
+      <tr><th>Segment</th><th>Count</th><th>Mean Dwell (days)</th><th>Mean TEU</th><th>Avg Storage Cost</th></tr>
+      {{segment_profile_rows}}
+    </table>
+  </div>
+
+  <!-- SECTION 6: FORECASTING RESULTS -->
+  <div class="section">
+    <h2>6. Forecasting Results</h2>
+    <h3>Model Comparison</h3>
+    <table>
+      <tr><th>Model</th><th>MAPE</th><th>RMSE</th><th>MAE</th></tr>
+      {{forecast_model_rows}}
+    </table>
+    <p>Selected model: <strong>{{best_forecast_model}}</strong>
+    (forecast horizon: {{forecast_horizon}} days)</p>
+    <div class="chart"><img src="{{chart_forecast}}" alt="Forecast Plot"></div>
+  </div>
+
+  <!-- SECTION 7: REVENUE & COST IMPACT -->
+  <div class="section">
+    <h2>7. Revenue &amp; Cost Impact Analysis</h2>
+    {{tariff_assumptions_table}}
+    <h3>Revenue summary</h3>
+    <div class="metric-grid">
+      <div class="metric"><div class="value">${{total_storage_revenue}}</div><div class="label">Total Storage Revenue</div></div>
+      <div class="metric"><div class="value">${{overstay_revenue}}</div><div class="label">Revenue from Overstayers</div></div>
+      <div class="metric"><div class="value">{{overstay_revenue_pct}}%</div><div class="label">Overstayer Revenue Share</div></div>
+      <div class="metric" style="border-left-color:#E24B4A"><div class="value">${{opportunity_cost_daily}}/day</div><div class="label">Opportunity Cost (Blocked Capacity)</div></div>
+    </div>
+    <h3>Opportunity cost analysis</h3>
+    <p>{{opportunity_cost_narrative}}</p>
+    <div class="recommendation"><strong>Key insight:</strong> {{key_revenue_insight}}</div>
+    <h3>What-if: throughput revenue sensitivity</h3>
+    <table>
+      <tr><th>If throughput revenue is...</th><th>Daily opportunity cost becomes...</th><th>vs demurrage earned</th></tr>
+      {{sensitivity_rows}}
+    </table>
+  </div>
+
+  <!-- SECTION 8: BUSINESS RECOMMENDATIONS -->
+  <div class="section">
+    <h2>8. Business Recommendations</h2>
+    <p>Recommendations are prioritized by segment dwell impact (longest-dwelling first):</p>
+    {{recommendation_cards}}
+  </div>
+
+  <!-- SECTION 9: PARAMETER SENSITIVITY (if applicable) -->
+  <!-- This section is populated when the user runs multiple parameter configs -->
+
+  <!-- SECTION 10: ASSUMPTIONS & LIMITATIONS -->
+  <div class="section">
+    <h2>9. Assumptions &amp; Limitations</h2>
+    <ul style="padding-left:20px;line-height:2">
+      <li>Dwell time is measured only for containers with both gate-in and gate-out timestamps.</li>
+      <li>Clustering assumes Euclidean distance in standardized feature space.</li>
+      <li>Forecasting models assume historical patterns continue.</li>
+      <li>Storage cost calculations depend on the accuracy of the tariff configuration provided.</li>
+      <li>Yard utilization is computed from container records; physical constraints are not modelled.</li>
+      <li>This skill analyzes containerized cargo only. General/breakbulk cargo requires separate methodology.</li>
+      <li>Future enhancements: BAPLIE integration, equipment utilization correlation, real-time gate scheduling via MCP.</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 11: DATA APPENDIX -->
+  <div class="section">
+    <h2>10. Data Appendix</h2>
+    <p>Analysis timestamp: {{timestamp}}</p>
+    <p>Parameters: overstay_threshold={{overstay_threshold}}d, num_segments={{num_segments}},
+    forecast_horizon={{forecast_horizon}}d, seed={{random_seed}}</p>
+    {{appendix_tables}}
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    Generated by Container Dwell Time Analytics Skill v1.0 &mdash; {{timestamp}}<br>
+    Pipeline: Data Validation &rarr; Feature Engineering &rarr; Multi-Algorithm Modelling &rarr;
+    Validation &rarr; Insight Generation &rarr; Report Generation
+  </div>
+
+</div>
+</body>
+</html>
