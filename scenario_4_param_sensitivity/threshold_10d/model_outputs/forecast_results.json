@@ -1,0 +1,63 @@
+{
+  "model1": {
+    "model": "HoltWinters_Additive",
+    "metrics": {
+      "mape": 3.57,
+      "rmse": 168.08,
+      "mae": 116.37
+    },
+    "params": {
+      "alpha": 0.2,
+      "beta": 0.1,
+      "gamma": 0.1,
+      "seasonal_period": 7
+    },
+    "future_forecast": [
+      3794.2,
+      3599.0,
+      3594.4,
+      3555.6,
+      3232.7,
+      2972.4,
+      3723.0,
+      3828.7,
+      3633.5,
+      3628.9,
+      3590.0,
+      3267.2,
+      3006.9,
+      3757.4
+    ]
+  },
+  "model2": {
+    "model": "StatsModels_HoltWinters",
+    "metrics": {
+      "mape": 15.34,
+      "rmse": 598.39,
+      "mae": 499.87
+    },
+    "params": {
+      "alpha": 1.0,
+      "beta": 0.5534,
+      "gamma": 0.0
+    },
+    "future_forecast": [
+      4508.3,
+      4593.9,
+      4600.5,
+      4551.1,
+      4205.1,
+      3913.4,
+      4631.1,
+      4699.1,
+      4784.8,
+      4791.3,
+      4742.0,
+      4396.0,
+      4104.2,
+      4822.0
+    ]
+  },
+  "best_model": "HoltWinters_Additive",
+  "forecast_horizon_days": 14
+}
