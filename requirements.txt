@@ -1,0 +1,19 @@
+# Container Dwell Time Analysis & Yard Throughput Optimization
+# Python dependencies — install with: pip install -r requirements.txt
+
+# Core data processing
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Machine learning (clustering, validation metrics, preprocessing)
+scikit-learn>=1.0.0
+
+# Scientific computing (transitive dependency of scikit-learn + statsmodels)
+scipy>=1.7.0
+
+# Time-series forecasting (Holt-Winters exponential smoothing)
+statsmodels>=0.13.0
+
+# Visualization (report charts, heatmaps, clustering plots)
+matplotlib>=3.5.0
+seaborn>=0.11.0
