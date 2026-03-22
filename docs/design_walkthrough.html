@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Walkthrough — Container Dwell Time Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 16mm; }
+  @media print {
+    body { font-size: 10pt; -webkit-print-color-adjust: exact !important;
+           print-color-adjust: exact !important; color-adjust: exact !important; }
+    .page-break { page-break-before: always; }
+    .hero, .col-box, .col-box-sm, .highlight, .diagram, table { page-break-inside: avoid; }
+    .two-col, .three-col { page-break-inside: avoid; }
+  }
+  /* Force backgrounds to render in print */
+  * { -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         color: #2c2c2a; line-height: 1.6; background: #f8f7f4; }
+
+  .content { max-width: 880px; margin: 0 auto; padding: 28px 24px; }
+  h2 { font-family: 'DM Serif Display', Georgia, serif;
+       font-size: 22px; font-weight: 400; color: #042f2e; margin: 28px 0 8px;
+       padding-bottom: 5px; border-bottom: 3px solid #1a8c6e; letter-spacing: -0.3px; }
+  h3 { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+       color: #0d5c4d; margin: 14px 0 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+  p { margin: 5px 0; font-size: 12px; line-height: 1.65; }
+
+  .hero { display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: 270px;
+          border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .hero-left { background: linear-gradient(160deg, #042f2e 0%, #0d5c4d 60%, #1a8c6e 100%);
+               color: white; padding: 28px 24px; display: flex; flex-direction: column;
+               justify-content: center; }
+  .hero-left .badge { display: inline-block; background: rgba(255,255,255,0.12);
+                      padding: 3px 12px; border-radius: 14px; font-size: 9px;
+                      margin-bottom: 10px; width: fit-content; letter-spacing: 2px;
+                      text-transform: uppercase; font-weight: 500; }
+  .hero-left h1 { font-family: 'DM Serif Display', Georgia, serif;
+                  font-size: 26px; font-weight: 400; line-height: 1.2; margin-bottom: 5px; }
+  .hero-left .sub { font-size: 11.5px; opacity: 0.75; line-height: 1.55; margin-bottom: 12px;
+                    font-weight: 400; }
+  .hero-left .meta { font-size: 10px; opacity: 0.5; line-height: 1.8; font-weight: 400; }
+  .hero-right { background: #f0fdf4; padding: 14px 12px; display: flex; flex-direction: column;
+                justify-content: center; }
+
+  .highlight { background: #e8f5ef; border-left: 4px solid #1a8c6e; padding: 8px 12px;
+               border-radius: 0 6px 6px 0; margin: 8px 0; font-size: 11.5px; line-height: 1.6; }
+  .highlight strong { letter-spacing: 0.2px; }
+  .highlight-orange { background: #fef3e2; border-left-color: #d97706; }
+
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
+  th { background: #042f2e; color: white; padding: 6px 8px; text-align: left;
+       font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+  td { padding: 6px 8px; border-bottom: 1px solid #e8e7e3; }
+  tr:nth-child(even) { background: #fafaf8; }
+
+  .diagram { text-align: center; margin: 10px 0; }
+  .diagram svg { max-width: 100%; border-radius: 8px; }
+  .fig-caption { text-align: center; font-size: 9px; color: #999; margin-top: -6px; margin-bottom: 8px;
+                 font-style: italic; }
+
+  .stats-row { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 80px; background: white; border-radius: 7px; padding: 8px 6px;
+          text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat .num { font-size: 18px; font-weight: 800; color: #0d5c4d; }
+  .stat .label { font-size: 9px; text-transform: uppercase; color: #888; letter-spacing: 0.3px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 8px 0; }
+  .col-box { background: white; border-radius: 8px; padding: 11px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+             border-top: 3px solid #1a8c6e; }
+  .col-box h3 { margin-top: 0; }
+  .col-box ul { padding-left: 14px; font-size: 11px; }
+  .col-box li { margin: 2px 0; }
+
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 8px 0; }
+  .col-box-sm { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+                border-top: 3px solid #2563eb; }
+  .col-box-sm h3 { margin: 0 0 4px; font-size: 12px; text-transform: none; letter-spacing: 0; }
+  .col-box-sm p { font-size: 10.5px; }
+
+  .footer { text-align: center; color: #aaa; font-size: 8px; padding: 20px 0 10px;
+            border-top: 1px solid #e8e7e3; margin-top: 20px;
+            text-transform: uppercase; letter-spacing: 1.5px; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="content">
+
+<!-- ======================== PAGE 1: HERO + DOMAIN + OPERATIONS FLOW ======================== -->
+
+<div class="hero">
+  <div class="hero-left">
+    <div class="badge">AMPBA Batch 24 — CT2 Assignment</div>
+    <h1>Design Walkthrough</h1>
+    <h1 style="font-size:14px;font-weight:400;opacity:0.9;margin-bottom:8px">Container Dwell Time Analysis &amp; Yard Throughput Optimization</h1>
+    <div class="sub">LLM-powered analytics pipeline that transforms raw container movement data into actionable yard management insights, revenue impact analysis, and stakeholder-ready reports.</div>
+    <div class="meta">
+      Domain: Ports &amp; Terminals — Cargoes Logistics<br>
+      Validated against live terminal reports
+    </div>
+  </div>
+  <div class="hero-right">
+    <svg viewBox="0 0 360 250" xmlns="http://www.w3.org/2000/svg" style="background:#f0fdf4">
+      <rect x="0" y="0" width="80" height="250" fill="#e0f2fe"/>
+      <text x="40" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#0369a1">OCEAN</text>
+      <rect x="8" y="26" width="64" height="34" rx="5" fill="#0ea5e9"/>
+      <text x="40" y="47" text-anchor="middle" font-size="8" font-weight="600" fill="white">Vessel</text>
+      <rect x="8" y="66" width="64" height="24" rx="5" fill="#38bdf8"/>
+      <text x="40" y="82" text-anchor="middle" font-size="7" fill="white">Feeder</text>
+      <rect x="80" y="0" width="6" height="250" fill="#64748b"/>
+      <rect x="86" y="0" width="180" height="250" fill="#f0fdf4"/>
+      <text x="176" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#166534">CONTAINER YARD</text>
+      <rect x="94" y="24" width="40" height="24" rx="4" fill="#bbf7d0" stroke="#16a34a" stroke-width="0.8"/>
+      <text x="114" y="36" text-anchor="middle" font-size="7" font-weight="600" fill="#166534">A01</text>
+      <text x="114" y="45" text-anchor="middle" font-size="6" fill="#166534">1600T</text>
+      <rect x="138" y="24" width="40" height="24" rx="4" fill="#bbf7d0" stroke="#16a34a" stroke-width="0.8"/>
+      <text x="158" y="36" text-anchor="middle" font-size="7" font-weight="600" fill="#166534">A02</text>
+      <rect x="182" y="24" width="40" height="24" rx="4" fill="#bbf7d0" stroke="#16a34a" stroke-width="0.8"/>
+      <text x="202" y="36" text-anchor="middle" font-size="7" font-weight="600" fill="#166534">B01</text>
+      <rect x="226" y="24" width="36" height="24" rx="4" fill="#bfdbfe" stroke="#2563eb" stroke-width="0.8"/>
+      <text x="244" y="36" text-anchor="middle" font-size="7" font-weight="600" fill="#1e40af">R01</text>
+      <rect x="92" y="58" width="170" height="38" rx="6" fill="#042f2e" stroke="#1a8c6e" stroke-width="1.5"/>
+      <text x="177" y="74" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80">⚡ OUR SKILL</text>
+      <text x="177" y="86" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.8)">Dwell · Utilization · Revenue · Forecast</text>
+      <rect x="94" y="106" width="168" height="18" rx="4" fill="#fef9c3" stroke="#ca8a04" stroke-width="0.5"/>
+      <text x="178" y="118" text-anchor="middle" font-size="7" fill="#854d0e">🏗️ RTGs · Reach Stackers · Tractors</text>
+      <rect x="94" y="132" width="168" height="22" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="0.8"/>
+      <text x="178" y="145" text-anchor="middle" font-size="7" font-weight="600" fill="#9d174d">🚛 GATE — IN: 4 | OUT: 3</text>
+      <rect x="266" y="0" width="94" height="250" fill="#fefce8"/>
+      <text x="313" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#854d0e">LAND</text>
+      <rect x="272" y="26" width="82" height="20" rx="4" fill="#fbbf24" stroke="#d97706" stroke-width="0.8"/>
+      <text x="313" y="40" text-anchor="middle" font-size="7" font-weight="600" fill="#78350f">🚛 Truck 70%</text>
+      <rect x="272" y="50" width="82" height="20" rx="4" fill="#fdba74" stroke="#ea580c" stroke-width="0.8"/>
+      <text x="313" y="64" text-anchor="middle" font-size="7" font-weight="600" fill="#7c2d12">🚂 Rail 25%</text>
+      <rect x="272" y="74" width="82" height="20" rx="4" fill="#fed7aa" stroke="#c2410c" stroke-width="0.8"/>
+      <text x="313" y="88" text-anchor="middle" font-size="7" font-weight="600" fill="#7c2d12">🚢 Barge 5%</text>
+      <!-- Capability strip -->
+      <rect x="6" y="164" width="348" height="80" rx="6" fill="white" stroke="#d1d5db" stroke-width="0.8"/>
+      <text x="180" y="180" text-anchor="middle" font-size="8" font-weight="700" fill="#042f2e" letter-spacing="1.5">SKILL CAPABILITIES</text>
+      <text x="72" y="198" text-anchor="middle" font-size="13" font-weight="800" fill="#0d5c4d">6</text>
+      <text x="72" y="208" text-anchor="middle" font-size="6" fill="#888">PIPELINE STAGES</text>
+      <text x="144" y="198" text-anchor="middle" font-size="13" font-weight="800" fill="#0d5c4d">13+</text>
+      <text x="144" y="208" text-anchor="middle" font-size="6" fill="#888">FEATURES</text>
+      <text x="216" y="198" text-anchor="middle" font-size="13" font-weight="800" fill="#0d5c4d">10</text>
+      <text x="216" y="208" text-anchor="middle" font-size="6" fill="#888">REPORT SECTIONS</text>
+      <text x="288" y="198" text-anchor="middle" font-size="13" font-weight="800" fill="#0d5c4d">2</text>
+      <text x="288" y="208" text-anchor="middle" font-size="6" fill="#888">ALGORITHMS</text>
+      <text x="180" y="232" text-anchor="middle" font-size="7" fill="#888">Pluggable configs: any terminal's yard layout + tariff structure</text>
+    </svg>
+  </div>
+</div>
+
+<h2 style="margin-top:2px">1. Where Our Skill Sits in Cargoes Logistics</h2>
+
+<p>A container terminal operates two core cargo flows — <strong>Import Discharge &amp; Delivery</strong> and <strong>Export Receive &amp; Loading</strong>. Each flow involves 10-15 operational steps managed by the Terminal Operating System (TOS). Our skill draws data from the <strong>Yard Planning</strong>, <strong>Gate Operations</strong>, and <strong>Operation Monitoring</strong> stages — the steps where dwell time accumulates and yard capacity is consumed.</p>
+
+<!-- IMPORT FLOW -->
+<div class="diagram">
+<svg viewBox="0 0 840 195" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border:1px solid #e0e0e0">
+  <text x="420" y="18" text-anchor="middle" font-size="12" font-weight="700" fill="#042f2e">Import Discharge &amp; Delivery Flow</text>
+  <!-- Row 1 -->
+  <rect x="10" y="30" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="65" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">🚢 Vessel Visit</text>
+  <text x="65" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Creation &amp; Manifest</text>
+
+  <text x="127" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="138" y="30" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="193" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">📋 Berth Planning</text>
+  <text x="193" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Schedule &amp; Assignment</text>
+
+  <text x="255" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="266" y="30" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="321" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">🏗️ Stowage &amp;</text>
+  <text x="321" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Discharge Planning</text>
+
+  <text x="383" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="394" y="30" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="449" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">⚙️ Resource &amp;</text>
+  <text x="449" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Equipment Deploy</text>
+
+  <text x="511" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="522" y="30" width="110" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="577" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">🏗️ Vessel</text>
+  <text x="577" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Discharge Operation</text>
+
+  <text x="639" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="650" y="30" width="110" height="44" rx="6" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="705" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#1e3a8a">📍 Yard Planning</text>
+  <text x="705" y="59" text-anchor="middle" font-size="7" fill="#1d4ed8">&amp; CHE Zoning</text>
+
+  <!-- Row 2 - continuation with skill highlighted -->
+  <rect x="650" y="88" width="110" height="44" rx="6" fill="#042f2e" stroke="#4ade80" stroke-width="2.5"/>
+  <text x="705" y="105" text-anchor="middle" font-size="8" font-weight="700" fill="#4ade80">⚡ DWELL TIME</text>
+  <text x="705" y="116" text-anchor="middle" font-size="7" font-weight="600" fill="#86efac">ACCUMULATES HERE</text>
+
+  <text x="643" y="113" font-size="11" fill="#999">←</text>
+
+  <rect x="522" y="88" width="110" height="44" rx="6" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="577" y="106" text-anchor="middle" font-size="8" font-weight="600" fill="#1e3a8a">🔄 CHE Work</text>
+  <text x="577" y="117" text-anchor="middle" font-size="7" fill="#1d4ed8">Queue &amp; Execution</text>
+
+  <text x="515" y="113" font-size="11" fill="#999">←</text>
+
+  <rect x="394" y="88" width="110" height="44" rx="6" fill="#fef3e2" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="449" y="106" text-anchor="middle" font-size="8" font-weight="600" fill="#78350f">🚛 Gate Appt</text>
+  <text x="449" y="117" text-anchor="middle" font-size="7" fill="#92400e">&amp; Gate Pass</text>
+
+  <text x="387" y="113" font-size="11" fill="#999">←</text>
+
+  <rect x="266" y="88" width="110" height="44" rx="6" fill="#fef3e2" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="321" y="106" text-anchor="middle" font-size="8" font-weight="600" fill="#78350f">🚚 Cargo</text>
+  <text x="321" y="117" text-anchor="middle" font-size="7" fill="#92400e">Delivery (Gate-Out)</text>
+
+  <text x="259" y="113" font-size="11" fill="#999">←</text>
+
+  <rect x="138" y="88" width="110" height="44" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="193" y="106" text-anchor="middle" font-size="8" font-weight="600" fill="#166534">📊 Operation</text>
+  <text x="193" y="117" text-anchor="middle" font-size="7" fill="#15803d">Monitoring</text>
+
+  <text x="131" y="113" font-size="11" fill="#999">←</text>
+
+  <rect x="10" y="88" width="110" height="44" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="65" y="106" text-anchor="middle" font-size="8" font-weight="600" fill="#166534">💰 Billing</text>
+  <text x="65" y="117" text-anchor="middle" font-size="7" fill="#15803d">&amp; Settlement</text>
+
+  <!-- Our skill annotation -->
+  <rect x="10" y="148" width="820" height="38" rx="6" fill="#f0fdf4" stroke="#1a8c6e" stroke-width="1"/>
+  <text x="25" y="164" font-size="9" font-weight="700" fill="#042f2e">📐 Our Skill Inputs:</text>
+  <text x="143" y="164" font-size="9" fill="#555">Gate-In timestamp (from Discharge) · Yard Block assignment (from Yard Planning) · Gate-Out timestamp (from Delivery)</text>
+  <text x="25" y="178" font-size="9" font-weight="700" fill="#042f2e">📊 Our Skill Outputs:</text>
+  <text x="147" y="178" font-size="9" fill="#555">Dwell duration · Block utilization · Segment classification · Storage cost · Throughput forecast · Actionable report</text>
+</svg>
+</div>
+<p class="fig-caption">Figure 1: Import Discharge &amp; Delivery — our skill analyzes the dwell period between yard placement and cargo delivery</p>
+
+<!-- EXPORT FLOW -->
+<div class="diagram">
+<svg viewBox="0 0 840 155" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border:1px solid #e0e0e0">
+  <text x="420" y="18" text-anchor="middle" font-size="12" font-weight="700" fill="#042f2e">Export Receive &amp; Loading Flow</text>
+  <!-- Row 1 -->
+  <rect x="10" y="30" width="100" height="44" rx="6" fill="#fef3e2" stroke="#fbbf24" stroke-width="1"/>
+  <text x="60" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#78350f">📋 Export</text>
+  <text x="60" y="59" text-anchor="middle" font-size="7" fill="#92400e">Pre-Advise</text>
+
+  <text x="117" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="125" y="30" width="100" height="44" rx="6" fill="#fef3e2" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="175" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#78350f">🚛 Gate Appt</text>
+  <text x="175" y="59" text-anchor="middle" font-size="7" fill="#92400e">&amp; Receive (In)</text>
+
+  <text x="232" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="240" y="30" width="100" height="44" rx="6" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="290" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#1e3a8a">📍 Yard Zoning</text>
+  <text x="290" y="59" text-anchor="middle" font-size="7" fill="#1d4ed8">&amp; Placement</text>
+
+  <text x="347" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="355" y="30" width="100" height="44" rx="6" fill="#042f2e" stroke="#4ade80" stroke-width="2.5"/>
+  <text x="405" y="47" text-anchor="middle" font-size="8" font-weight="700" fill="#4ade80">⚡ DWELL</text>
+  <text x="405" y="58" text-anchor="middle" font-size="7" font-weight="600" fill="#86efac">ACCUMULATES</text>
+
+  <text x="462" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="470" y="30" width="100" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="520" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">🏗️ Stowage &amp;</text>
+  <text x="520" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Load Planning</text>
+
+  <text x="577" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="585" y="30" width="100" height="44" rx="6" fill="#e0f2fe" stroke="#7dd3fc" stroke-width="1"/>
+  <text x="635" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#0c4a6e">🚢 Vessel</text>
+  <text x="635" y="59" text-anchor="middle" font-size="7" fill="#0369a1">Loading (Out)</text>
+
+  <text x="692" y="55" font-size="11" fill="#999">→</text>
+
+  <rect x="700" y="30" width="130" height="44" rx="6" fill="#f0fdf4" stroke="#86efac" stroke-width="1"/>
+  <text x="765" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#166534">📊 Monitoring &amp;</text>
+  <text x="765" y="59" text-anchor="middle" font-size="7" fill="#15803d">Departure Report</text>
+
+  <!-- Annotation -->
+  <rect x="10" y="88" width="820" height="58" rx="6" fill="#f0fdf4" stroke="#1a8c6e" stroke-width="1"/>
+  <text x="25" y="106" font-size="9" font-weight="700" fill="#042f2e">Export dwell pattern:</text>
+  <text x="148" y="106" font-size="9" fill="#555">Container arrives via truck (Gate-In) → sits in yard awaiting vessel → loaded onto vessel (Gate-Out). Dwell is typically shorter because</text>
+  <text x="25" y="120" font-size="9" fill="#555">export containers are time-bound to vessel departure schedules. Industry benchmark: export dwell is typically 20–30% shorter than import.</text>
+  <text x="25" y="138" font-size="9" font-weight="700" fill="#042f2e">Transhipment:</text>
+  <text x="110" y="138" font-size="9" fill="#555">Container arrives by vessel → sits in yard → departs by vessel. Shortest dwell because both ends are vessel-scheduled.</text>
+</svg>
+</div>
+<p class="fig-caption">Figure 2: Export Receive &amp; Loading — dwell accumulates between gate receive and vessel loading</p>
+
+
+<!-- ======================== PAGE 2: OPERATIONS MATRIX + ARCHITECTURE ======================== -->
+<h2 class="page-break">2. Terminal Operations Matrix &amp; Pipeline Architecture</h2>
+
+<p>A modern TOS manages six operational domains. Our skill draws data from <strong>Yard Planning</strong> (container positions, block capacity), <strong>Gate Operations</strong> (timestamps, throughput), and <strong>Work Order Management</strong> (container movements). It outputs to <strong>Operation Monitoring</strong> (reports, alerts).</p>
+
+<!-- Operations Matrix -->
+<div class="diagram">
+<svg viewBox="0 0 840 180" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border:1px solid #e0e0e0">
+  <!-- Headers -->
+  <rect x="0" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="70" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Vessel Planning</text>
+  <rect x="140" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="210" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Yard Planning</text>
+  <rect x="280" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="350" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Resource Planning</text>
+  <rect x="420" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="490" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Gate Operations</text>
+  <rect x="560" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="630" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Work Orders</text>
+  <rect x="700" y="0" width="140" height="30" fill="#1a8c6e"/>
+  <text x="770" y="19" text-anchor="middle" font-size="10" font-weight="600" fill="white">Rail Operations</text>
+
+  <!-- Row 1 -->
+  <rect x="0" y="32" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="70" y="48" text-anchor="middle" font-size="8" fill="#555">Cargo hatches,</text>
+  <text x="70" y="58" text-anchor="middle" font-size="8" fill="#555">holds, cranes</text>
+
+  <rect x="140" y="32" width="140" height="42" fill="#e8f5ef" stroke="#1a8c6e" stroke-width="2"/>
+  <text x="210" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">⚡ Yard capacity,</text>
+  <text x="210" y="58" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">block config, TEU</text>
+
+  <rect x="280" y="32" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="350" y="48" text-anchor="middle" font-size="8" fill="#555">Resource plans,</text>
+  <text x="350" y="58" text-anchor="middle" font-size="8" fill="#555">equipment fleet</text>
+
+  <rect x="420" y="32" width="140" height="42" fill="#e8f5ef" stroke="#1a8c6e" stroke-width="2"/>
+  <text x="490" y="48" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">⚡ Gate timestamps,</text>
+  <text x="490" y="58" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">throughput, modes</text>
+
+  <rect x="560" y="32" width="140" height="42" fill="#fef3e2" stroke="#fbbf24" stroke-width="1"/>
+  <text x="630" y="48" text-anchor="middle" font-size="8" fill="#854d0e">Container moves,</text>
+  <text x="630" y="58" text-anchor="middle" font-size="8" fill="#854d0e">CHE assignments</text>
+
+  <rect x="700" y="32" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="770" y="48" text-anchor="middle" font-size="8" fill="#555">Rail visit, loading</text>
+  <text x="770" y="58" text-anchor="middle" font-size="8" fill="#555">discharge tally</text>
+
+  <!-- Row 2 -->
+  <rect x="0" y="76" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="70" y="92" text-anchor="middle" font-size="8" fill="#555">Stowage plan</text>
+  <text x="70" y="102" text-anchor="middle" font-size="8" fill="#555">creation</text>
+
+  <rect x="140" y="76" width="140" height="42" fill="#e8f5ef" stroke="#1a8c6e" stroke-width="2"/>
+  <text x="210" y="92" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">⚡ Yard layout,</text>
+  <text x="210" y="102" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">areas, sub-areas</text>
+
+  <rect x="280" y="76" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="350" y="92" text-anchor="middle" font-size="8" fill="#555">Manpower, asset</text>
+  <text x="350" y="102" text-anchor="middle" font-size="8" fill="#555">type allocation</text>
+
+  <rect x="420" y="76" width="140" height="42" fill="#e8f5ef" stroke="#1a8c6e" stroke-width="2"/>
+  <text x="490" y="92" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">⚡ Multi-stage gate,</text>
+  <text x="490" y="102" text-anchor="middle" font-size="8" font-weight="600" fill="#042f2e">lane config</text>
+
+  <rect x="560" y="76" width="140" height="42" fill="#fef3e2" stroke="#fbbf24" stroke-width="1"/>
+  <text x="630" y="92" text-anchor="middle" font-size="8" fill="#854d0e">Equipment work</text>
+  <text x="630" y="102" text-anchor="middle" font-size="8" fill="#854d0e">order assignment</text>
+
+  <rect x="700" y="76" width="140" height="42" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="770" y="92" text-anchor="middle" font-size="8" fill="#555">Rail cars,</text>
+  <text x="770" y="102" text-anchor="middle" font-size="8" fill="#555">load/discharge</text>
+
+  <!-- Legend -->
+  <rect x="140" y="128" width="14" height="14" rx="2" fill="#e8f5ef" stroke="#1a8c6e" stroke-width="1.5"/>
+  <text x="160" y="139" font-size="9" fill="#042f2e">= Direct data input to our skill</text>
+  <rect x="360" y="128" width="14" height="14" rx="2" fill="#fef3e2" stroke="#fbbf24" stroke-width="1"/>
+  <text x="380" y="139" font-size="9" fill="#854d0e">= Indirect data (future enhancement)</text>
+  <rect x="580" y="128" width="14" height="14" rx="2" fill="#f8f7f4" stroke="#e0e0e0" stroke-width="0.5"/>
+  <text x="600" y="139" font-size="9" fill="#555">= Out of scope</text>
+</svg>
+</div>
+<p class="fig-caption">Figure 3: Terminal Operations Matrix — green-bordered cells feed directly into our skill</p>
+
+<h3>6-Stage Analytics Pipeline</h3>
+<div class="diagram">
+<svg viewBox="0 0 840 85" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border:1px solid #e0e0e0">
+  <rect x="8" y="12" width="115" height="48" rx="8" fill="#042f2e"/>
+  <text x="65" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80">STAGE 1</text>
+  <text x="65" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">Validation</text>
+  <text x="65" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">→ quality.json</text>
+  <rect x="143" y="12" width="115" height="48" rx="8" fill="#042f2e"/>
+  <text x="200" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80">STAGE 2</text>
+  <text x="200" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">Features (13+)</text>
+  <text x="200" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">→ 2 CSVs</text>
+  <rect x="278" y="12" width="115" height="48" rx="8" fill="#042f2e"/>
+  <text x="335" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80">STAGE 3</text>
+  <text x="335" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">Modelling</text>
+  <text x="335" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">KMeans + HW</text>
+  <rect x="413" y="12" width="115" height="48" rx="8" fill="#042f2e"/>
+  <text x="470" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#fbbf24">STAGE 4</text>
+  <text x="470" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">Validation</text>
+  <text x="470" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">Silhouette·MAPE</text>
+  <rect x="548" y="12" width="115" height="48" rx="8" fill="#1e3a5f"/>
+  <text x="605" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#93c5fd">STAGE 5</text>
+  <text x="605" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">LLM Insights</text>
+  <text x="605" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">REFERENCE.md</text>
+  <rect x="683" y="12" width="145" height="48" rx="8" fill="#042f2e"/>
+  <text x="755" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f87171">STAGE 6</text>
+  <text x="755" y="42" text-anchor="middle" font-size="8" font-weight="600" fill="white">Report (10 sections)</text>
+  <text x="755" y="52" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.5)">Charts·Insights·Actions</text>
+  <line x1="123" y1="36" x2="143" y2="36" stroke="#4ade80" stroke-width="2" marker-end="url(#px)"/>
+  <line x1="258" y1="36" x2="278" y2="36" stroke="#4ade80" stroke-width="2" marker-end="url(#px)"/>
+  <line x1="393" y1="36" x2="413" y2="36" stroke="#fbbf24" stroke-width="2" marker-end="url(#px)"/>
+  <line x1="528" y1="36" x2="548" y2="36" stroke="#93c5fd" stroke-width="2" marker-end="url(#px)"/>
+  <line x1="663" y1="36" x2="683" y2="36" stroke="#f87171" stroke-width="2" marker-end="url(#px)"/>
+  <defs><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#666"/></marker></defs>
+  <text x="65" y="76" text-anchor="middle" font-size="7" fill="#888">validate_data.py</text>
+  <text x="200" y="76" text-anchor="middle" font-size="7" fill="#888">feature_engineering.py</text>
+  <text x="335" y="76" text-anchor="middle" font-size="7" fill="#888">run_models.py</text>
+  <text x="470" y="76" text-anchor="middle" font-size="7" fill="#888">(same script)</text>
+  <text x="605" y="76" text-anchor="middle" font-size="7" fill="#888">LLM + REFERENCE</text>
+  <text x="755" y="76" text-anchor="middle" font-size="7" fill="#888">generate_report.py</text>
+</svg>
+</div>
+
+<h3>Algorithm Justification</h3>
+<div class="two-col">
+  <div class="col-box">
+    <h3>Clustering: K-Means + Hierarchical</h3>
+    <ul>
+      <li><strong>K-Means (primary):</strong> Multi-feature grouping on dwell_hours + teu_equivalent + storage_cost. Adapts to each terminal's patterns vs arbitrary thresholds.</li>
+      <li><strong>Hierarchical (comparison):</strong> Ward linkage validates K-Means. Sampled to 10K for O(n²) memory.</li>
+      <li><strong>Why not DBSCAN?</strong> Dwell data is continuous + right-skewed, not density-clustered.</li>
+    </ul>
+    <div class="highlight" style="margin:6px 0;padding:6px 10px;font-size:10.5px">
+      <strong>Critical:</strong> Cluster on BEHAVIOR only. Categoricals dominate feature space → splits by type not dwell. Used for profiling AFTER assignment (RFM approach).<br><br>
+      <strong>k-cap at 8:</strong> We test k=2–10 for complete charts, but only <em>select</em> from k≤8. At k=9–10, K-Means splits the same dwell band by 20ft vs 40ft, producing duplicate archetypes with identical recommendations. The silhouette gain is ~0.01 — not worth the interpretability loss. Full range shown in charts for transparency.
+    </div>
+  </div>
+  <div class="col-box">
+    <h3>Forecasting: Holt-Winters + StatsModels</h3>
+    <ul>
+      <li><strong>Holt-Winters (manual):</strong> Level + trend + 7-day seasonal. Auto-tuned α/β/γ parameters.</li>
+      <li><strong>StatsModels HW:</strong> Library-optimized alternative. Both models compete; pipeline auto-selects the winner by MAPE.</li>
+      <li><strong>7-day seasonality:</strong> Weekday gate activity 30-40% higher than weekends.</li>
+      <li><strong>Graceful fallback:</strong> If statsmodels unavailable → manual HW + SMA.</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ======================== PAGE 3: REPORT DESIGN + DATA RATIONALE ======================== -->
+<h2 class="page-break">3. Report Design &amp; Synthetic Data Rationale</h2>
+
+<h3>Three Audiences, One Report</h3>
+<div class="three-col">
+  <div class="col-box-sm">
+    <h3>👔 Director / CFO</h3>
+    <p>Reads Sections 1, 7, 8. Dollar figures, opportunity cost, actions. No jargon.</p>
+  </div>
+  <div class="col-box-sm" style="border-top-color:#d97706">
+    <h3>🏗️ Yard Planner</h3>
+    <p>Reads Sections 3, 4, 5. Congested blocks, longest-dwelling types, clearance priorities.</p>
+  </div>
+  <div class="col-box-sm" style="border-top-color:#7c3aed">
+    <h3>📊 Analytics Team</h3>
+    <p>Reads all sections. Silhouette, MAPE, elbow plot. Methodology verification.</p>
+  </div>
+</div>
+
+<h3>Design Principles</h3>
+<div class="two-col">
+  <div class="col-box" style="padding:10px">
+    <h3>📗 Insight Boxes + Faceted Charts</h3>
+    <p style="font-size:11px">Green boxes answer: <em>What am I looking at? Is this normal? What should I do?</em> Box plots replaced with faceted histograms and horizontal bars — readable by non-analysts. Cumulative departure curve: "90% leave by day X."</p>
+  </div>
+  <div class="col-box" style="padding:10px">
+    <h3>🏷️ Segment Narrative Cards</h3>
+    <p style="font-size:11px">Each cluster → <strong>WHO</strong> (dominant type, movement, flow) → <strong>BEHAVIOR</strong> (dwell, cost, overstay%) → <strong>WHY</strong> (root cause) → <strong>ACTION</strong> (recommendation). Labels differentiate 20ft vs 40ft when segments overlap.</p>
+  </div>
+</div>
+<div class="two-col" style="margin-top:4px">
+  <div class="col-box" style="padding:10px">
+    <h3>💰 Revenue Transparency</h3>
+    <p style="font-size:11px">Full tariff table (every rate sourced). Opportunity cost with caveat: <em>"40-70% of theoretical max is achievable."</em> What-if at ±30%, ±50%.</p>
+  </div>
+  <div class="col-box" style="padding:10px">
+    <h3>📉 Graceful Degradation</h3>
+    <p style="font-size:11px">8 required columns → full report. Missing config → section warns instead of crashing. Progressive enrichment as optional data arrives.</p>
+  </div>
+</div>
+
+<h3>Pluggable Configuration Design</h3>
+<p>The skill is designed to work with <strong>any terminal's data</strong> — not just our test dataset. Two optional JSON config files make the skill adaptable without code changes:</p>
+<div class="two-col">
+  <div class="col-box" style="padding:10px">
+    <h3>yard_config.json</h3>
+    <p style="font-size:11px">Defines the terminal's physical layout: block IDs, TEU capacity per block, reefer plug counts, accepted container types, gate lane counts. <strong>When new data arrives:</strong> the user provides their terminal's block layout. Utilization percentages, congestion detection, and reefer plug analysis all adapt automatically. If omitted, the pipeline skips block-level analysis and notes the absence.</p>
+  </div>
+  <div class="col-box" style="padding:10px">
+    <h3>tariff_config.json</h3>
+    <p style="font-size:11px">Defines the terminal's pricing: free days per movement type, tiered demurrage rates ($X/TEU/day at escalating thresholds), reefer and hazmat surcharges, throughput revenue per TEU. <strong>When new data arrives:</strong> the user supplies their rate card. Storage cost, opportunity cost, and what-if sensitivity all recalculate. If omitted, revenue section displays a warning — no crash.</p>
+  </div>
+</div>
+
+<h3>Test Data Calibration</h3>
+<p>For testing, we generated synthetic data calibrated to real port operations — not arbitrary random values:</p>
+<table>
+  <tr><th>Parameter</th><th>Value</th><th>Real-world basis</th></tr>
+  <tr><td>Movement split</td><td>44% import, 34% export, 22% T/S</td><td>Gateway terminal with relay traffic</td></tr>
+  <tr><td>Size mix</td><td>40% 20ft, 60% 40ft</td><td>Industry standard (real: 55-65% 40ft)</td></tr>
+  <tr><td>Dwell clusters</td><td>15% fast, 52% normal, 22% extended, 8% overstay, 3% chronic</td><td>80/20 rule of port operations</td></tr>
+  <tr><td>Shipping line</td><td>Maersk 0.85×, ZIM 1.35×</td><td>Larger lines = faster pickup logistics</td></tr>
+  <tr><td>Flow path</td><td>Rail 1.4×, Truck 1.0×</td><td>Rail waits for scheduled services</td></tr>
+  <tr><td>Demurrage</td><td>$15→$30→$55→$85/TEU/day</td><td>Escalating tiers, mid-range global tariffs</td></tr>
+  <tr><td>Scale</td><td>Configurable (--num-containers)</td><td>Tested at 3K–50K; scales to any terminal size</td></tr>
+</table>
+
+<div class="highlight" style="margin-top:6px">
+  <strong>Real-data validation:</strong> Distributions confirmed against live "Inventory on Dock" and "Dwell Time" reports from an operational terminal (March 2026). Import-dominated volume, right-skewed long tail, movement-type dwell differentials all match. See PROJECT_DECISIONS.md Section 10.
+</div>
+
+<!-- ======================== PAGE 4: TESTING + FUTURE + SUMMARY ======================== -->
+<h2 class="page-break">4. What Failed, What We Fixed &amp; Testing</h2>
+
+<p>Building this skill was iterative. Several design choices that seemed correct initially produced broken or misleading results. Each failure taught us something about the gap between textbook approaches and real terminal operations.</p>
+
+<h3>Problem 1: Synthetic Data Realism</h3>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#dc2626;padding:10px">
+    <h3 style="color:#dc2626">What Failed</h3>
+    <p style="font-size:11px">Random seeding with numpy produced statistically valid but operationally absurd data: 25% empty containers (real: 12–14%), block utilizations of 145–196% (physically impossible), overstay rates of 30%+ (real: 10–15%), and flat shipping line dwell times (7.3–8.0 days for every carrier). The data passed all schema checks but wouldn’t fool anyone who’s worked on a terminal.</p>
+  </div>
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">How We Fixed It</h3>
+    <p style="font-size:11px">Replaced flat randomisation with <strong>domain-calibrated cluster weights</strong> (15% fast / 52% normal / 22% extended / 8% overstay / 3% chronic), <strong>shipping line dwell multipliers</strong> (Maersk 0.85× vs ZIM 1.35×), <strong>flow-path multipliers</strong> (rail 1.4× vs truck 1.0×), and scaled block capacities to match a real terminal layout. Validated against live operational reports — distributions now match.</p>
+  </div>
+</div>
+
+<h3>Problem 2: Hierarchical Clustering at 50K Scale</h3>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#dc2626;padding:10px">
+    <h3 style="color:#dc2626">What Failed</h3>
+    <p style="font-size:11px">AgglomerativeClustering with Ward linkage computes a full pairwise distance matrix — for 48K containers that’s 48K × 48K = <strong>2.3 billion distance calculations</strong>. On a laptop, the script either hung for 30+ minutes or crashed with an out-of-memory error. The silhouette_score validation had the same O(n²) problem.</p>
+  </div>
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">How We Fixed It</h3>
+    <p style="font-size:11px">Hierarchical clustering now <strong>samples 10K rows</strong> via stratified random sampling, then assigns the full dataset using NearestCentroid. Silhouette score is also computed on a 10K sample. K-Means runs on the full dataset (it scales linearly). Result: pipeline completes in under 5 minutes on a laptop instead of hanging indefinitely.</p>
+  </div>
+</div>
+
+<h3>Problem 3: K-Means Splitting by Category, Not Dwell Behavior</h3>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#dc2626;padding:10px">
+    <h3 style="color:#dc2626">What Failed</h3>
+    <p style="font-size:11px">With one-hot encoded categoricals (movement_type, container_type) in the feature set, K-Means produced <strong>6 out of 7 segments all labelled “Standard Dwellers”</strong> with nearly identical dwell times (4.1–5.2 days). The algorithm was splitting by “is it import or export?” and “is it dry or reefer?” — not by dwell behavior. The recommendations section repeated the same advice 6 times.</p>
+  </div>
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">How We Fixed It</h3>
+    <p style="font-size:11px">Removed all categoricals from the clustering feature set. Cluster on <strong>dwell_hours + teu_equivalent + storage_cost only</strong> (the RFM approach — cluster on behavioral metrics, profile with demographics after). Segments now have distinct dwell ranges (0.5d to 10.6d) with unique labels. Added <strong>WHO / BEHAVIOR / WHY / ACTION narrative cards</strong> per segment with enriched profiles (dominant type, movement, flow path, overstay %).</p>
+  </div>
+</div>
+
+<h3>Problem 4: Charts Not Stakeholder-Readable</h3>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#dc2626;padding:10px">
+    <h3 style="color:#dc2626">What Failed</h3>
+    <p style="font-size:11px">Box plots showed hundreds of outlier dots that looked like errors. Overlaid histograms had bars hiding behind each other. The yard heatmap x-axis showed raw datetime with nanosecond precision (<code>2025-01-01T00:00:00.000000000</code>). Technically correct, operationally useless for a yard planner.</p>
+  </div>
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">How We Fixed It</h3>
+    <p style="font-size:11px">Replaced box plots with <strong>faceted histograms</strong> (one panel per movement type) and <strong>horizontal bar charts</strong> with inline stats. Added a <strong>cumulative departure curve</strong> (“90% leave by day X”). Heatmap aggregated to <strong>weekly averages</strong> with clean date labels. Added <strong>insight boxes</strong> below every chart explaining what it means in plain business language.</p>
+  </div>
+</div>
+
+<h3>Problem 5: Duplicate Segment Labels</h3>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#dc2626;padding:10px">
+    <h3 style="color:#dc2626">What Failed</h3>
+    <p style="font-size:11px">K-Means with k=7 produced multiple segments in the same archetype band — three clusters all labelled “Extended Stay” with identical recommendations repeated three times. No differentiation, no actionable insight.</p>
+  </div>
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">How We Fixed It</h3>
+    <p style="font-size:11px">Built a <strong>two-pass labelling system</strong>: assign base archetype by dwell range, then detect duplicates and differentiate by TEU size (20ft vs 40ft) and relative dwell position. Result: “Extended Stay (40ft, longest dwell)” vs “Extended Stay (20ft)” — each with unique, actionable identity and distinct capacity impact notes.</p>
+  </div>
+</div>
+
+<div style="width:100%;height:1px;background:#e5e5e5;margin:12px 0"></div>
+
+<h3>5 Test Scenarios — All Passed</h3>
+<table>
+  <tr><th>#</th><th>Scenario</th><th>What It Tests</th><th>Result</th></tr>
+  <tr><td>1</td><td>Happy Path</td><td>50K containers, full config, complete pipeline</td><td style="color:#16a34a;font-weight:600">✅ Full report generated, all 9 sections</td></tr>
+  <tr><td>2</td><td>Minimal Input</td><td>8 columns only, no configs</td><td style="color:#16a34a;font-weight:600">✅ Graceful degradation</td></tr>
+  <tr><td>3</td><td>Bad Data</td><td>35% nulls, negative weights, reversed dates</td><td style="color:#16a34a;font-weight:600">✅ FAIL (expected) — 3 errors, 3 warnings</td></tr>
+  <tr><td>4</td><td>Param Sensitivity</td><td>Threshold=5d vs 10d on same data</td><td style="color:#16a34a;font-weight:600">✅ 22.0% vs 8.7% overstay</td></tr>
+  <tr><td>5</td><td>Reefer-Only</td><td>Single container type, 2 blocks</td><td style="color:#16a34a;font-weight:600">✅ Single-type handled</td></tr>
+</table>
+
+<div class="highlight" style="margin-top:6px">
+  <strong>Scenario 4 insight:</strong> Threshold 5→10 days cuts overstay rate by 13.3pp but total storage revenue stays identical. Confirms the threshold affects classification and opportunity cost calculations, not actual billing. Operators should set it based on their operational tolerance for yard occupancy.
+</div>
+
+<h3>Future Enhancements</h3>
+<p style="font-size:11px"><strong>Near-term:</strong> BAPLIE integration for predictive yard planning, STORAGE movement type for warehousing containers (34–46d dwell), FULL/EMPTY split within movement types. <strong>Long-term:</strong> Equipment utilization correlation (RTG reshuffles increase with high-dwell blocks), real-time MCP connection to the Terminal Operating System for live alerts, and Port Community System integration for customs clearance tracking.</p>
+
+<!--
+<div class="two-col">
+  <div class="col-box">
+    <h3>Near-term</h3>
+    <ul>
+      <li><strong>BAPLIE Integration:</strong> Parse vessel stowage plans → predict volumes 24-48h before arrival</li>
+      <li><strong>STORAGE movement type:</strong> Track warehousing containers (34-46d dwell) separately</li>
+      <li><strong>FULL/EMPTY split:</strong> IMPORT_FULL vs IMPORT_EMPTY — different implications</li>
+    </ul>
+  </div>
+  <div class="col-box">
+    <h3>Long-term</h3>
+    <ul>
+      <li><strong>Equipment correlation:</strong> Link dwell to RTG utilization — more reshuffles, more cost</li>
+      <li><strong>Real-time MCP:</strong> TOS integration for live alerts and automated pickup reminders</li>
+      <li><strong>Port Community System:</strong> Customs clearance status for smarter overstay detection</li>
+    </ul>
+  </div>
+</div>
+-->
+
+<!-- Differentiators removed to keep concise; covered in README.md -->
+
+<!--
+<h3>What Makes This Skill Different</h3>
+<table>
+  <tr><th>Differentiator</th><th>Why It Matters</th></tr>
+  <tr><td><strong>Domain grounding</strong></td><td>Built by a team member in port operations; validated against live reports — not a textbook exercise</td></tr>
+  <tr><td><strong>Dual analytics</strong></td><td>Clustering (segmentation) + Forecasting (throughput) serving complementary operational decisions</td></tr>
+  <tr><td><strong>Revenue transparency</strong></td><td>Full tariff table, opportunity cost with caveat, what-if sensitivity — CFO-ready and auditable</td></tr>
+  <tr><td><strong>Stakeholder-first</strong></td><td>Insight boxes, WHO/WHY/ACTION cards, faceted charts readable by non-analysts</td></tr>
+  <tr><td><strong>Graceful degradation</strong></td><td>8 required columns → full report; optional data enriches without crashing</td></tr>
+  <tr><td><strong>Reproducible</strong></td><td>Deterministic seeds, automated 5-scenario runner, console logs captured</td></tr>
+</table>
+-->
+
+<div class="highlight" style="margin-top:10px">
+  <strong>In summary:</strong> This skill sits at the intersection of Yard Planning, Gate Operations, and Operation Monitoring in the Cargoes Logistics chain. It answers the terminal operator's core questions — where is my yard congested, which containers should I prioritize for clearance, and what is the financial impact? Every problem we encountered — from unrealistic synthetic data to unusable clustering to unreadable charts — was rooted in a gap between what works in a textbook and what works in a real terminal. The fixes reflect operational reality, not statistical convenience.
+</div>
+
+<div class="footer">
+  Container Dwell Time Analysis &amp; Yard Throughput Optimization — Design Walkthrough v1.0<br>
+  AMPBA Batch 24 — Term 4, CT2 Assignment
+</div>
+
+</div>
+</body>
+</html>
