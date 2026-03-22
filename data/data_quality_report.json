@@ -1,0 +1,242 @@
+{
+  "status": "PASS",
+  "total_rows": 50000,
+  "valid_rows": 50000,
+  "excluded_rows": 0,
+  "unique_containers": 45942,
+  "date_range": {
+    "start": "2025-01-01",
+    "end": "2025-06-30",
+    "span_days": 180
+  },
+  "column_quality": {
+    "container_id": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "iso_type_code": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "size_ft": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "container_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "weight_tons": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_in_time": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_out_time": {
+      "nulls": 1582,
+      "null_pct": 3.16
+    },
+    "movement_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_block": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_bay": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_row": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_tier": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "vessel_name": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "shipping_line": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "cargo_category": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_in_mode": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_out_mode": {
+      "nulls": 0,
+      "null_pct": 0.0
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "profiling": {
+    "size_ft": {
+      "count": 50000,
+      "min": 20.0,
+      "max": 40.0,
+      "mean": 33.07,
+      "median": 40.0,
+      "std": 9.52,
+      "skewness": -0.65
+    },
+    "weight_tons": {
+      "count": 50000,
+      "min": 2.0,
+      "max": 32.0,
+      "mean": 16.77,
+      "median": 16.7,
+      "std": 7.94,
+      "skewness": 0.01
+    },
+    "yard_bay": {
+      "count": 50000,
+      "min": 1.0,
+      "max": 45.0,
+      "mean": 18.63,
+      "median": 18.0,
+      "std": 11.09,
+      "skewness": 0.19
+    },
+    "yard_row": {
+      "count": 50000,
+      "min": 1.0,
+      "max": 8.0,
+      "mean": 4.3,
+      "median": 4.0,
+      "std": 2.25,
+      "skewness": 0.11
+    },
+    "yard_tier": {
+      "count": 50000,
+      "min": 1.0,
+      "max": 5.0,
+      "mean": 2.91,
+      "median": 3.0,
+      "std": 1.39,
+      "skewness": 0.07
+    },
+    "container_type": {
+      "count": 50000,
+      "unique": 5,
+      "top_values": {
+        "dry": 37482,
+        "reefer": 5944,
+        "empty": 4600,
+        "special": 987,
+        "hazardous": 987
+      }
+    },
+    "movement_type": {
+      "count": 50000,
+      "unique": 3,
+      "top_values": {
+        "import": 23207,
+        "export": 17784,
+        "transhipment": 9009
+      }
+    },
+    "yard_block": {
+      "count": 50000,
+      "unique": 7,
+      "top_values": {
+        "A02": 14178,
+        "A01": 13983,
+        "B01": 13363,
+        "R01": 2978,
+        "R02": 2966,
+        "E01": 1545,
+        "H01": 987
+      }
+    },
+    "shipping_line": {
+      "count": 50000,
+      "unique": 9,
+      "top_values": {
+        "MSC": 10941,
+        "Maersk": 9202,
+        "CMA CGM": 6929,
+        "COSCO": 6013,
+        "Hapag-Lloyd": 4960,
+        "ONE": 4084,
+        "Evergreen": 3447,
+        "HMM": 2422,
+        "ZIM": 2002
+      }
+    },
+    "gate_in_mode": {
+      "count": 50000,
+      "unique": 4,
+      "top_values": {
+        "vessel": 32216,
+        "truck": 12813,
+        "rail": 3153,
+        "barge": 1818
+      }
+    },
+    "gate_out_mode": {
+      "count": 50000,
+      "unique": 4,
+      "top_values": {
+        "vessel": 26793,
+        "truck": 16322,
+        "rail": 4597,
+        "barge": 2288
+      }
+    },
+    "cargo_category": {
+      "count": 50000,
+      "unique": 11,
+      "top_values": {
+        "food_perishable": 8363,
+        "electronics": 5734,
+        "textiles": 5390,
+        "consumer_goods": 4748,
+        "empty": 4600,
+        "chemicals": 4362,
+        "machinery": 4035,
+        "pharmaceuticals": 3626,
+        "auto_parts": 3417,
+        "building_materials": 3059
+      }
+    },
+    "iso_type_code": {
+      "count": 50000,
+      "unique": 8,
+      "top_values": {
+        "42G1": 17469,
+        "22G1": 13851,
+        "45G1": 10762,
+        "45R1": 3953,
+        "22R1": 1991,
+        "22T1": 987,
+        "42P1": 497,
+        "22U1": 490
+      }
+    }
+  },
+  "optional_columns_present": [
+    "iso_type_code",
+    "yard_bay",
+    "yard_row",
+    "yard_tier",
+    "vessel_name",
+    "shipping_line",
+    "cargo_category",
+    "gate_in_mode",
+    "gate_out_mode"
+  ],
+  "yard_config_provided": true,
+  "tariff_config_provided": false
+}
