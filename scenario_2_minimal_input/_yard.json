@@ -1,0 +1,94 @@
+{
+  "terminal_name": "Greenfield Container Terminal \u2014 Berth 3",
+  "blocks": [
+    {
+      "block_id": "A01",
+      "rows": 8,
+      "bays": 40,
+      "max_tier": 5,
+      "teu_capacity": 1600,
+      "accepts_types": [
+        "dry",
+        "empty"
+      ],
+      "has_reefer_plugs": false,
+      "reefer_plug_count": 0
+    },
+    {
+      "block_id": "A02",
+      "rows": 8,
+      "bays": 40,
+      "max_tier": 5,
+      "teu_capacity": 1600,
+      "accepts_types": [
+        "dry",
+        "empty"
+      ],
+      "has_reefer_plugs": false,
+      "reefer_plug_count": 0
+    },
+    {
+      "block_id": "B01",
+      "rows": 8,
+      "bays": 35,
+      "max_tier": 5,
+      "teu_capacity": 1400,
+      "accepts_types": [
+        "dry",
+        "special"
+      ],
+      "has_reefer_plugs": false,
+      "reefer_plug_count": 0
+    },
+    {
+      "block_id": "R01",
+      "rows": 6,
+      "bays": 25,
+      "max_tier": 4,
+      "teu_capacity": 720,
+      "accepts_types": [
+        "reefer"
+      ],
+      "has_reefer_plugs": true,
+      "reefer_plug_count": 180
+    },
+    {
+      "block_id": "R02",
+      "rows": 5,
+      "bays": 20,
+      "max_tier": 4,
+      "teu_capacity": 480,
+      "accepts_types": [
+        "reefer"
+      ],
+      "has_reefer_plugs": true,
+      "reefer_plug_count": 100
+    },
+    {
+      "block_id": "H01",
+      "rows": 4,
+      "bays": 15,
+      "max_tier": 3,
+      "teu_capacity": 270,
+      "accepts_types": [
+        "hazardous"
+      ],
+      "has_reefer_plugs": false,
+      "reefer_plug_count": 0
+    },
+    {
+      "block_id": "E01",
+      "rows": 8,
+      "bays": 45,
+      "max_tier": 6,
+      "teu_capacity": 2160,
+      "accepts_types": [
+        "empty"
+      ],
+      "has_reefer_plugs": false,
+      "reefer_plug_count": 0
+    }
+  ],
+  "gate_count_in": 6,
+  "gate_count_out": 4
+}

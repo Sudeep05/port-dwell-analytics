@@ -1,0 +1,14 @@
+{
+  "clustering": {
+    "best_algorithm": "KMeans",
+    "best_k": 7,
+    "silhouette_score": 0.4127,
+    "quality_interpretation": "Weak but usable"
+  },
+  "forecasting": {
+    "best_model": "HoltWinters_Additive",
+    "mape": 9.88,
+    "rmse": 38.81,
+    "mae": 31.22
+  }
+}

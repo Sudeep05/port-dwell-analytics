@@ -1,0 +1,152 @@
+Scenario 1: Happy Path
+Started: 2026-03-22 12:46:11.146990
+Description: 50K containers, full yard+tariff config, all optional columns
+Expected: PASS validation, complete pipeline, full report with all sections
+
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/validate_data.py --input /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/synthetic_containers.csv --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/tariff_config.json --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/data_quality_report.json --validated-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/validated_containers.csv
+============================================================
+============================================================
+STAGE 1: Data Validation & Profiling
+============================================================
+
+Quality report saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/data_quality_report.json
+Validated data saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/validated_containers.csv (50000 rows)
+
+--- Validation Result: PASS ---
+  Total rows: 50000
+  Valid rows: 50000
+  Excluded: 0
+  Unique containers: 45942
+  Date range: 2025-01-01 to 2025-06-30 (180 days)
+
+  ✓ Validation passed. Proceed to Stage 2.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/feature_engineering.py --input /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/validated_containers.csv --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/tariff_config.json --output-container /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/dwell_features.csv --output-block /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/block_daily_features.csv
+============================================================
+============================================================
+STAGE 2: Feature Engineering
+============================================================
+  Yard config loaded: 7 blocks
+  Tariff config loaded: USD
+  Overstay threshold: 7 days
+
+  Computing per-container features...
+    Containers with dwell: 48418
+    Mean dwell: 4.9 days
+    Overstay count: 5989
+    Total storage revenue: $8,825,047
+    Saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/dwell_features.csv (50000 rows)
+
+  Computing block-daily features...
+    Block-day records: 1267
+  Computing gate throughput...
+    Hourly records: 4343
+  Detecting vessel surges...
+    No surge events detected
+    Saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/block_daily_features.csv (1267 rows)
+
+  Validation checks:
+    Infinite values: 0
+    NaN in key features: {'dwell_hours': 1582, 'teu_equivalent': 0}
+
+  ✓ Feature engineering complete. Proceed to Stage 3.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/run_models.py --container-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/dwell_features.csv --block-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/block_daily_features.csv --num-segments 4 --forecast-horizon 14 --random-seed 42 --output-dir /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/model_outputs
+============================================================
+============================================================
+STAGE 3: Modelling & Analysis
+============================================================
+
+  Part A: Dwell Behaviour Clustering
+  ----------------------------------------
+    Clustering features: 4 dimensions, 48418 containers
+    Testing k = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+    (Hierarchical will use 10,000 sample — full 48,418 is too large for O(n²) linkage)
+    Running k=2... KM sil=0.291, HC sil=0.310
+    Running k=3... KM sil=0.351, HC sil=0.348
+    Running k=4... KM sil=0.316, HC sil=0.341
+    Running k=5... KM sil=0.350, HC sil=0.330
+    Running k=6... KM sil=0.355, HC sil=0.292
+    Running k=7... KM sil=0.363, HC sil=0.323
+    Running k=8... KM sil=0.371, HC sil=0.334
+    Running k=9... KM sil=0.365, HC sil=0.332
+    Running k=10... KM sil=0.375, HC sil=0.333
+
+    Algorithm       k     Silhouette   C-H Index    Inertia     
+    --------------------------------------------------------
+    KMeans          2     0.2913       4275.5       136548      
+    Hierarchical    2     0.3095       3595.1       N/A         
+    KMeans          3     0.3512       4871.0       97914       
+    Hierarchical    3     0.3483       4619.1       N/A         
+    KMeans          4     0.3160       4546.7       81932       
+    Hierarchical    4     0.3407       4232.0       N/A         
+    KMeans          5     0.3497       4721.0       67752       
+    Hierarchical    5     0.3298       3926.1       N/A         
+    KMeans          6     0.3549       4634.5       59172       
+    Hierarchical    6     0.2924       3859.5       N/A         
+    KMeans          7     0.3632       4537.6       52398       
+    Hierarchical    7     0.3225       3964.8       N/A         
+    KMeans          8     0.3709       4579.0       46131       
+    Hierarchical    8     0.3340       4041.3       N/A         
+    KMeans          9     0.3648       4609.9       41451       
+    Hierarchical    9     0.3322       3989.8       N/A         
+    KMeans          10    0.3749       4650.6       37241       
+    Hierarchical    10    0.3334       3920.0       N/A         
+
+============================================================
+STAGE 4: Model/Result Validation
+============================================================
+
+  Clustering validation:
+    Selected: KMeans with k=8
+    Silhouette: 0.3709
+    Interpretation: Weak but usable
+
+    Segment profiles:
+    Seg   Count    %       Mean Dwell (d)   Mean TEU  
+    ----------------------------------------------
+    0     5909     12.2    5.9              2.0       
+    1     9702     20.0    2.2              1.0       
+    2     7941     16.4    2.8              2.0       
+    3     5107     10.5    4.9              2.0       
+    4     6586     13.6    6.2              1.0       
+    5     6928     14.3    2.6              2.0       
+    6     4062     8.4     0.5              2.0       
+    7     2183     4.5     34.4             1.8       
+    Generating dendrogram...
+    Generating centroid comparison...
+    Charts saved to /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/model_outputs/charts/
+
+  Part B: Yard Throughput Forecasting
+  ----------------------------------------
+    Time series: 181 daily observations
+    Train: 144 days, Test: 37 days
+
+    HoltWinters_Additive:
+      MAPE: 3.6%  |  RMSE: 168.1  |  MAE: 116.4
+
+    StatsModels_HoltWinters:
+      MAPE: 15.3%  |  RMSE: 598.4  |  MAE: 499.9
+
+    Selected: HoltWinters_Additive (MAPE: 3.6%)
+
+  All outputs saved to /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/model_outputs/
+  ✓ Modelling & validation complete. Proceed to Stage 5 (LLM) & Stage 6.
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/generate_report.py --container-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/dwell_features.csv --block-features /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/block_daily_features.csv --model-dir /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/model_outputs --quality-report /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/data_quality_report.json --yard-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/yard_config.json --tariff-config /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/data/tariff_config.json --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/final_report.html
+============================================================
+============================================================
+STAGE 6: Report Generation
+============================================================
+  Generating charts...
+  Building report sections...
+
+  Report saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_1_happy_path/final_report.html (1841 KB)
+  ✓ Report generation complete.
+
+Completed: 2026-03-22 12:46:40.193224

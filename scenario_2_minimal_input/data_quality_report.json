@@ -1,0 +1,104 @@
+{
+  "status": "PASS",
+  "total_rows": 5000,
+  "valid_rows": 5000,
+  "excluded_rows": 0,
+  "unique_containers": 4599,
+  "date_range": {
+    "start": "2025-01-01",
+    "end": "2025-06-30",
+    "span_days": 180
+  },
+  "column_quality": {
+    "container_id": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "size_ft": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "container_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "weight_tons": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_in_time": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "gate_out_time": {
+      "nulls": 144,
+      "null_pct": 2.88
+    },
+    "movement_type": {
+      "nulls": 0,
+      "null_pct": 0.0
+    },
+    "yard_block": {
+      "nulls": 0,
+      "null_pct": 0.0
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "profiling": {
+    "size_ft": {
+      "count": 5000,
+      "min": 20.0,
+      "max": 40.0,
+      "mean": 33.42,
+      "median": 40.0,
+      "std": 9.4,
+      "skewness": -0.73
+    },
+    "weight_tons": {
+      "count": 5000,
+      "min": 2.0,
+      "max": 32.0,
+      "mean": 16.83,
+      "median": 16.95,
+      "std": 7.93,
+      "skewness": -0.0
+    },
+    "container_type": {
+      "count": 5000,
+      "unique": 5,
+      "top_values": {
+        "dry": 3750,
+        "reefer": 599,
+        "empty": 474,
+        "special": 91,
+        "hazardous": 86
+      }
+    },
+    "movement_type": {
+      "count": 5000,
+      "unique": 3,
+      "top_values": {
+        "import": 2331,
+        "export": 1818,
+        "transhipment": 851
+      }
+    },
+    "yard_block": {
+      "count": 5000,
+      "unique": 7,
+      "top_values": {
+        "A02": 1463,
+        "A01": 1410,
+        "B01": 1288,
+        "R01": 301,
+        "R02": 298,
+        "E01": 154,
+        "H01": 86
+      }
+    }
+  },
+  "optional_columns_present": [],
+  "yard_config_provided": false,
+  "tariff_config_provided": false
+}

@@ -1,0 +1,75 @@
+Scenario 3: Bad Data
+Started: 2026-03-22 12:46:51.486397
+Description: Deliberately corrupted data — >30% nulls, negative weights, reversed dates
+Expected: FAIL validation, clear error messages, pipeline stops
+
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/generate_synthetic_data.py --num-containers 2000 --seed 77 --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_clean.csv --yard-config-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_yard.json --tariff-config-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_tariff.json --ground-truth-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_gt.csv
+============================================================
+Generating 2,000 containers (2025-01-01 to 2025-06-30, seed=77)...
+  Generating 2,000 containers vectorized...
+    [0/8] Container IDs: 1,840 unique + 160 repeat visits (0.0s)
+    [1/8] Clusters assigned (0.0s)
+    [2/8] ISO codes + types (0.0s)
+    [3/8] Movement types (0.0s)
+    [4/8] Transport + shipping (0.0s)
+    [5/8] Dwell hours computed (0.0s)
+    [6/8] Timestamps computed (0.0s)
+    [7/8] Attributes computed (0.0s)
+    [8/8] DataFrame assembled (0.0s)
+  Container data saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_clean.csv (2,000 rows)
+  Ground truth saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_gt.csv
+  Yard config saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_yard.json
+  Tariff config saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/_tariff.json
+
+--- Dataset Summary (generated in 0.0s) ---
+  Unique containers: 1,840 (160 repeat visits = 8.0%)
+  Container ID format sample: MSCU1298444, CMAU2110788, MRSU9307766
+  Date range: 2025-01-01 05:34:38 to 2025-06-30 21:50:28
+  Container types: {'dry': 1498, 'reefer': 211, 'empty': 197, 'special': 53, 'hazardous': 41}
+  Movement types: {'import': 937, 'export': 725, 'transhipment': 338}
+  Yard blocks: ['A01', 'A02', 'B01', 'E01', 'H01', 'R01', 'R02']
+  Null gate_out (still in yard): 70
+  Size mix: {40: 1277, 20: 723}
+  Shipping lines: 9
+  Empty rate: 9.8%
+Corruption 1: Set 705 (35.2%) container_type to null
+Corruption 2: Set 50 weights to negative
+Corruption 3: Swapped gate_in/gate_out for 299 (14.9%) rows
+Corruption 4: Set 30 movement_type to 'INVALID_TYPE'
+
+Corrupted CSV saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/bad_containers.csv (2000 rows)
+
+
+============================================================
+$ /Users/palasudeepkumar/Desktop/Foundation_Project/.conda/bin/python scripts/validate_data.py --input /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/bad_containers.csv --output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/data_quality_report.json --validated-output /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/validated_containers.csv
+============================================================
+============================================================
+STAGE 1: Data Validation & Profiling
+============================================================
+
+Quality report saved: /Users/palasudeepkumar/Desktop/CT2-skill/port-dwell-analytics-main/outputs/scenario_3_bad_data/data_quality_report.json
+
+--- Validation Result: FAIL ---
+  Total rows: 2000
+  Valid rows: 1712
+  Excluded: 288
+  Unique containers: 1595
+  Date range: 2025-01-01 to 2025-06-30 (180 days)
+
+  ERRORS (3):
+    ✗ container_type: 35.25% null (exceeds 20% threshold) — REJECT
+    ✗ gate_in_time: 11 values could not be parsed as dates
+    ✗ 288 rows (14.4%) have gate_out before gate_in — excluded from analysis
+
+  WARNINGS (3):
+    ⚠ movement_type has 30 invalid values: ['INVALID_TYPE']
+    ⚠ weight_tons has 50 non-positive values
+    ⚠ 50 containers with weight < 1 ton (possible data error)
+
+  ❌ Pipeline STOPPED. Fix errors above and re-run.
+
+*** EXPECTED: Validation correctly FAILED ***
+
+Completed: 2026-03-22 12:46:52.202634
