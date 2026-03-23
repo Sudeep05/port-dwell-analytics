@@ -469,6 +469,36 @@
   </div>
 </div>
 
+<h3>Facts vs Estimates — What the Skill Realistically Delivers</h3>
+<p>The report deliberately separates two layers of output. Understanding this distinction is critical for how the skill should be used in practice:</p>
+<div class="two-col">
+  <div class="col-box" style="border-top-color:#16a34a;padding:10px">
+    <h3 style="color:#16a34a">100% factual — directly from the data</h3>
+    <ul>
+      <li>Container ZIMU4832917 has been in Block A01 for 127 days</li>
+      <li>2,183 containers (4.5%) are sitting 34+ days</li>
+      <li>HMM and ZIM containers dwell 25–35% longer than average</li>
+      <li>Block R01 reefer plugs hit capacity every Friday</li>
+      <li>Vessel-to-rail containers dwell 2.1× longer than vessel-to-truck</li>
+      <li>Total storage charges collected: $8.8M over 6 months</li>
+    </ul>
+    <p style="font-size:10px;color:#16a34a;margin-top:6px"><strong>These drive immediate action — no assumptions needed.</strong></p>
+  </div>
+  <div class="col-box" style="border-top-color:#d97706;padding:10px">
+    <h3 style="color:#d97706">Estimated — depends on terminal demand</h3>
+    <ul>
+      <li>$11.5M in blocked throughput capacity (theoretical maximum)</li>
+      <li>$4.6M–$8.1M realizable at 40–70% demand fill rate</li>
+      <li>"Reducing dwell by 2 days frees 700 TEU slots"</li>
+      <li>"Each freed slot could earn $85/TEU in throughput"</li>
+    </ul>
+    <p style="font-size:10px;color:#d97706;margin-top:6px"><strong>These justify investment decisions — reported with explicit caveats and sensitivity ranges.</strong></p>
+  </div>
+</div>
+<div class="highlight" style="margin-top:4px">
+  <strong>Key design decision:</strong> The actions in the report are valid <em>regardless of the revenue estimate accuracy</em>. "Clear container ZIMU4832917" is the right action whether the freed slot earns $85 or $0 — the container is still causing reshuffles, consuming yard management attention, and blocking crane paths. "Call ZIM about their slow pickups" is valid because the dwell comparison is a <em>fact</em>, not an estimate. The dollar figures serve a different purpose: they give the terminal manager a business case to justify hiring a customs liaison, adding a rail service, or building overflow capacity. The report separates these layers explicitly — the Priority Action List (Section 9) is the "pick up the phone" list for the yard planner; the Revenue &amp; Cost Impact (Section 7) is the CFO's investment justification with honest 40–70% realization caveats.
+</div>
+
 <h3>Design Principles</h3>
 <div class="two-col">
   <div class="col-box" style="padding:10px">
@@ -591,7 +621,7 @@
 <h3>5 Test Scenarios — All Passed</h3>
 <table>
   <tr><th>#</th><th>Scenario</th><th>What It Tests</th><th>Result</th></tr>
-  <tr><td>1</td><td>Happy Path</td><td>50K containers, full config, complete pipeline</td><td style="color:#16a34a;font-weight:600">✅ Full report generated, all 9 sections</td></tr>
+  <tr><td>1</td><td>Happy Path</td><td>50K containers, full config, complete pipeline</td><td style="color:#16a34a;font-weight:600">✅ Full report generated, all 10 sections</td></tr>
   <tr><td>2</td><td>Minimal Input</td><td>8 columns only, no configs</td><td style="color:#16a34a;font-weight:600">✅ Graceful degradation</td></tr>
   <tr><td>3</td><td>Bad Data</td><td>35% nulls, negative weights, reversed dates</td><td style="color:#16a34a;font-weight:600">✅ FAIL (expected) — 3 errors, 3 warnings</td></tr>
   <tr><td>4</td><td>Param Sensitivity</td><td>Threshold=5d vs 10d on same data</td><td style="color:#16a34a;font-weight:600">✅ 22.0% vs 8.7% overstay</td></tr>
