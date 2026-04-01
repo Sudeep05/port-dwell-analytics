@@ -632,6 +632,89 @@
   <strong>Scenario 4 insight:</strong> Threshold 5→10 days cuts overstay rate by 13.3pp but total storage revenue stays identical. Confirms the threshold affects classification and opportunity cost calculations, not actual billing. Operators should set it based on their operational tolerance for yard occupancy.
 </div>
 
+<h3>Full Pipeline Execution Trace — Scenario 1 (Happy Path)</h3>
+<p>The following is a condensed trace of the complete pipeline execution on 50,000 containers with full configuration. Each stage’s actual console output is shown — from CSV input through validation, feature engineering, modelling, and final report generation.</p>
+
+<p style="font-size:10px;color:#888;margin:4px 0"><strong>Input:</strong> synthetic_containers.csv (50,000 rows) + yard_config.json (7 blocks) + tariff_config.json (4 tiers)</p>
+
+<div style="background:#1e1e2e;color:#cdd6f4;padding:12px 14px;border-radius:8px;font-family:'Menlo','Consolas',monospace;font-size:9.5px;line-height:1.7;overflow-x:auto;margin:8px 0">
+<span style="color:#a6e3a1">STAGE 1: Data Validation &amp; Profiling</span><br>
+--- Validation Result: <span style="color:#a6e3a1">PASS</span> ---<br>
+&nbsp;&nbsp;Total rows: 50000<br>
+&nbsp;&nbsp;Valid rows: 50000<br>
+&nbsp;&nbsp;Excluded: 0<br>
+&nbsp;&nbsp;Unique containers: 45942<br>
+&nbsp;&nbsp;Date range: 2025-01-01 to 2025-06-30 (180 days)<br>
+&nbsp;&nbsp;<span style="color:#a6e3a1">✓ Validation passed. Proceed to Stage 2.</span><br>
+<br>
+<span style="color:#a6e3a1">STAGE 2: Feature Engineering</span><br>
+&nbsp;&nbsp;Yard config loaded: 7 blocks<br>
+&nbsp;&nbsp;Tariff config loaded: USD<br>
+&nbsp;&nbsp;Overstay threshold: 7 days<br>
+&nbsp;&nbsp;Containers with dwell: 48,418<br>
+&nbsp;&nbsp;Mean dwell: <span style="color:#f9e2af">4.9 days</span><br>
+&nbsp;&nbsp;Overstay count: <span style="color:#f38ba8">5,989</span><br>
+&nbsp;&nbsp;Total storage revenue: <span style="color:#f9e2af">$8,825,047</span><br>
+&nbsp;&nbsp;<span style="color:#a6e3a1">✓ Feature engineering complete. Proceed to Stage 3.</span><br>
+<br>
+<span style="color:#a6e3a1">STAGE 3: Modelling &amp; Analysis</span><br>
+&nbsp;&nbsp;Clustering features: 4 dimensions, 48,418 containers<br>
+&nbsp;&nbsp;Testing k = [2, 3, 4, 5, 6, 7, 8, 9, 10]<br>
+&nbsp;&nbsp;(Hierarchical will use 10,000 sample — full 48,418 too large for O(n²) linkage)<br>
+&nbsp;&nbsp;k=2: KM sil=0.291, HC sil=0.310<br>
+&nbsp;&nbsp;k=3: KM sil=0.351, HC sil=0.348<br>
+&nbsp;&nbsp;k=5: KM sil=0.350, HC sil=0.330<br>
+&nbsp;&nbsp;k=8: KM sil=<span style="color:#f9e2af">0.371</span>, HC sil=0.334<br>
+&nbsp;&nbsp;k=10: KM sil=0.375, HC sil=0.333<br>
+<br>
+<span style="color:#f9e2af">STAGE 4: Model/Result Validation</span><br>
+&nbsp;&nbsp;Selected: <span style="color:#a6e3a1">KMeans with k=8</span> (silhouette: 0.3709 — Weak but usable)<br>
+&nbsp;&nbsp;Segment sizes: 4.5% to 20.0% <span style="color:#a6e3a1">(all within 3–55% bounds)</span><br>
+&nbsp;&nbsp;Note: k=10 had sil 0.3749 (+0.004) — capped at k≤8 for interpretability<br>
+<br>
+&nbsp;&nbsp;Forecasting: Train=144 days, Test=37 days<br>
+&nbsp;&nbsp;HoltWinters_Additive: MAPE=<span style="color:#a6e3a1">3.6%</span> | RMSE=168.1<br>
+&nbsp;&nbsp;StatsModels_HoltWinters: MAPE=15.3% | RMSE=598.8<br>
+&nbsp;&nbsp;Selected: <span style="color:#a6e3a1">HoltWinters_Additive</span> (MAPE: 3.6% — Excellent)<br>
+&nbsp;&nbsp;<span style="color:#a6e3a1">✓ Modelling &amp; validation complete.</span><br>
+<br>
+<span style="color:#f38ba8">STAGE 6: Report Generation</span><br>
+&nbsp;&nbsp;Generating charts... Building report sections...<br>
+&nbsp;&nbsp;Report saved: final_report.html (<span style="color:#f9e2af">1,656 KB</span>)<br>
+&nbsp;&nbsp;<span style="color:#a6e3a1">✓ Report generation complete.</span><br>
+<br>
+<span style="color:#585b70">Total pipeline time: ~33 seconds</span>
+</div>
+
+<p style="font-size:10px;color:#888;margin:4px 0"><strong>Output:</strong> final_report.html (self-contained, 10 sections, all charts embedded as base64) + data_quality_report.json + dwell_features.csv + block_daily_features.csv + cluster_results.json + forecast_results.json + validation_metrics.json + 5 chart PNGs</p>
+
+<h3>Failure Trace — Scenario 3 (Bad Data)</h3>
+<p>To demonstrate the guardrails, here is the pipeline’s response to deliberately corrupted data (35% nulls in container_type, 50 negative weights, 15% reversed dates, 30 invalid movement types):</p>
+
+<div style="background:#1e1e2e;color:#cdd6f4;padding:12px 14px;border-radius:8px;font-family:'Menlo','Consolas',monospace;font-size:9.5px;line-height:1.7;overflow-x:auto;margin:8px 0">
+<span style="color:#a6e3a1">STAGE 1: Data Validation &amp; Profiling</span><br>
+--- Validation Result: <span style="color:#f38ba8">FAIL</span> ---<br>
+&nbsp;&nbsp;Total rows: 2,000<br>
+&nbsp;&nbsp;Valid rows: 1,712<br>
+&nbsp;&nbsp;Excluded: 288<br>
+<br>
+&nbsp;&nbsp;<span style="color:#f38ba8">ERRORS (3):</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f38ba8">✗ container_type: 35.25% null (exceeds 20% threshold) — REJECT</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f38ba8">✗ gate_in_time: 11 values could not be parsed as dates</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f38ba8">✗ 288 rows (14.4%) have gate_out before gate_in — excluded</span><br>
+<br>
+&nbsp;&nbsp;<span style="color:#f9e2af">WARNINGS (3):</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f9e2af">⚠ movement_type has 30 invalid values: ['INVALID_TYPE']</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f9e2af">⚠ weight_tons has 50 non-positive values</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#f9e2af">⚠ 50 containers with weight &lt; 1 ton (possible data error)</span><br>
+<br>
+&nbsp;&nbsp;<span style="color:#f38ba8">❌ Pipeline STOPPED. Fix errors above and re-run.</span>
+</div>
+
+<div class="highlight" style="margin-top:6px">
+  <strong>Key observation:</strong> The pipeline correctly identified all 4 corruption types, quantified each issue with exact counts and percentages, and <strong>refused to proceed</strong> rather than producing a misleading report. The error messages are specific enough that a terminal operator could fix them without technical support: “container_type: 35.25% null” tells them exactly which column to clean. Full trace logs for all 5 scenarios are available in <code>outputs/scenario_*/scenario_log.txt</code>.
+</div>
+
 <h3>Future Enhancements</h3>
 <p style="font-size:11px"><strong>Near-term:</strong> BAPLIE integration for predictive yard planning, STORAGE movement type for warehousing containers (34–46d dwell), FULL/EMPTY split within movement types. <strong>Long-term:</strong> Equipment utilization correlation (RTG reshuffles increase with high-dwell blocks), real-time MCP connection to the Terminal Operating System for live alerts, and Port Community System integration for customs clearance tracking.</p>
 
